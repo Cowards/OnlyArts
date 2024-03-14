@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <meta content="Page description" name="description" />
+    <meta name="google" content="notranslate" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/stylesheets/base.css" />
+    <link rel="stylesheet" href="./assets/stylesheets/sidebar.css" />
+    <link rel="stylesheet" href="./assets/stylesheets/dashboard.css" />
+    <title>Dashboard</title>
+    <script src="./assets/js/content-load.js"></script>
+    <script src="./assets/js/style.js"></script>
+  </head>
+  <body>
+    <section id="sidebar"></section>
+    <section id="content">
+      <nav id="header"></nav>
+      <main id="dashboard">
+        <p class="title">Statistics Dashboard</p>
+        <ul class="box-info">
+          <li class="box-card">
+            <div class="card">
+              <i class="bx bx-palette"></i>
+              <span class="text">
+                <h3 id="artwork-count">1020</h3>
+                <p id="artwork-text">Artworks</p>
+              </span>
+            </div>
+          </li>
+          <li class="box-card">
+            <div class="card">
+              <i class="bx bx-user"></i>
+              <span class="text">
+                <h3 id="artwork-count">1020</h3>
+                <p id="user-text">Users</p>
+              </span>
+            </div>
+          </li>
+          <li class="box-card">
+            <div class="card">
+              <i class="bx bx-basket"></i>
+              <span class="text">
+                <h3 id="artwork-count">1020</h3>
+                <p id="order-text">Orders</p>
+              </span>
+            </div>
+          </li>
+          <li class="box-card">
+            <div class="card">
+              <i class="bx bx-dollar"></i>
+              <span class="text">
+                <h3 id="artwork-count">1020</h3>
+                <p id="profit-text">Profit</p>
+              </span>
+            </div>
+          </li>
+        </ul>
+        <div class="table-data">
+          <div class="user">
+            <div class="head">
+              <h3>Users</h3>
+              <form id="user-form" class="form">
+                <input
+                  type="text"
+                  name="user-search"
+                  id="user-search"
+                  class="form-input"
+                  placeholder="Search user..."
+                />
+                <button type="submit" class="form-search-btn">
+                  <i class="bx bx-search"></i>
+                </button>
+              </form>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Join Date</th>
+                  <th>Status</th>
+                  <th>Edit</th>
+                  <th>Del</th>
+                </tr>
+              </thead>
+              <tbody id="user-data-body">
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>hieudtse170041@fpt.edu.vn</td>
+                  <td>0123456789</td>
+                  <td>
+                    512 Xo Viet Nghe Tinh, Phuong 12, Quan Binh Thanh, TP.Ho Chi
+                    Minh
+                  </td>
+                  <td>01/01/2022</td>
+                  <td class="Online">Online</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>hieudtse170041@fpt.edu.vn</td>
+                  <td>0123456789</td>
+                  <td>KTX Khu B, DHQG TPHCM, Di An, Binh Duong</td>
+                  <td>01/01/2022</td>
+                  <td class="Offline">Offline</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>hieudtse170041@fpt.edu.vn</td>
+                  <td>0123456789</td>
+                  <td>KTX Khu B, DHQG TPHCM, Di An, Binh Duong</td>
+                  <td>01/01/2022</td>
+                  <td class="Banned">Banned</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>hieudtse170041@fpt.edu.vn</td>
+                  <td>0123456789</td>
+                  <td>KTX Khu B, DHQG TPHCM, Di An, Binh Duong</td>
+                  <td>01/01/2022</td>
+                  <td class="Removed">Removed</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="table-data">
+          <div class="artwork">
+            <div class="head">
+              <h3>Artworks</h3>
+              <form id="artwork-form" class="form">
+                <input
+                  type="text"
+                  name="artwork-search"
+                  id="artwork-search"
+                  class="form-input"
+                  placeholder="Search artwork..."
+                />
+                <button type="submit" class="form-search-btn">
+                  <i class="bx bx-search"></i>
+                </button>
+              </form>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Creator</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Released Date</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Edit</th>
+                  <th>Del</th>
+                </tr>
+              </thead>
+              <tbody id="artwork-data-body">
+                <tr>
+                  <td>Artwork name</td>
+                  <td>Creator name</td>
+                  <td>Artwork type</td>
+                  <td>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Excepturi repellat dolores quia distinctio dolor tempore
+                    debitis quidem facilis quod molestias similique at culpa
+                    quo, ipsa accusantium laborum ab perferendis suscipit!
+                  </td>
+                  <td>28/11/2023</td>
+                  <td>100.0 $</td>
+                  <td class="Online">Public</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Artwork name</td>
+                  <td>Creator name</td>
+                  <td>Artwork type</td>
+                  <td>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Excepturi repellat dolores quia distinctio dolor tempore
+                    debitis quidem facilis quod molestias similique at culpa
+                    quo, ipsa accusantium laborum ab perferendis suscipit!
+                  </td>
+                  <td>28/11/2023</td>
+                  <td>100.0 $</td>
+                  <td class="Offline">Private</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Artwork name</td>
+                  <td>Creator name</td>
+                  <td>Artwork type</td>
+                  <td>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Excepturi repellat dolores quia distinctio dolor tempore
+                    debitis quidem facilis quod molestias similique at culpa
+                    quo, ipsa accusantium laborum ab perferendis suscipit!
+                  </td>
+                  <td>28/11/2023</td>
+                  <td>100.0 $</td>
+                  <td class="Banned">Banned</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Artwork name</td>
+                  <td>Creator name</td>
+                  <td>Artwork type</td>
+                  <td>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Excepturi repellat dolores quia distinctio dolor tempore
+                    debitis quidem facilis quod molestias similique at culpa
+                    quo, ipsa accusantium laborum ab perferendis suscipit!
+                  </td>
+                  <td>28/11/2023</td>
+                  <td>100.0 $</td>
+                  <td class="Removed">Removed</td>
+                  <td>
+                    <a href="#" class="edit-btn">
+                      <i class="bx bx-pencil"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" class="remove-btn">
+                      <i class="bx bx-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="table-data">
+          <div class="order">
+            <div class="head">
+              <h3>Orders</h3>
+              <form id="order-form" class="form">
+                <input
+                  type="text"
+                  name="order-search"
+                  id="order-search"
+                  class="form-input"
+                  placeholder="Search order..."
+                />
+                <button type="submit" class="form-search-btn">
+                  <i class="bx bx-search"></i>
+                </button>
+              </form>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Order Time</th>
+                  <th>Total Price</th>
+                  <th>Payment Method</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>28/11/2023</td>
+                  <td>1500.0 $</td>
+                  <td>COD</td>
+                  <td class="Offline">Unconfirmed</td>
+                </tr>
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>28/11/2023</td>
+                  <td>1500.0 $</td>
+                  <td>COD</td>
+                  <td class="Online">Confirmed</td>
+                </tr>
+                <tr>
+                  <td>Do The Hieu</td>
+                  <td>28/11/2023</td>
+                  <td>1500.0 $</td>
+                  <td>COD</td>
+                  <td class="Removed">Removed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="user-popup" class="popup">
+          <div class="user-info">
+            <form id="user-popup-form" class="popup-form">
+              
+            </form>
+          </div>
+        </div>
+        <div id="artwork-popup" class="popup"></div>
+      </main>
+    </section>
+  </body>
+</html>
