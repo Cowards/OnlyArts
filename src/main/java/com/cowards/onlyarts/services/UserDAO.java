@@ -39,6 +39,10 @@ public class UserDAO {
             + "[address] = ?,"
             + "[bio] = ? "
             + "WHERE [user_id] = ? ";
+     private static final String CHANGE_PASSWORD
+            = "UPDATE [dbo].[Users]"
+            + "SET [password] = ?"
+            + "WHERE [user_id] = ?";
 
     private void logError(String message, Exception ex) {
         Logger.getLogger(UserDAO.class.getName())
@@ -204,4 +208,24 @@ public class UserDAO {
         return check;
     }
 
+    public boolean changePassword(String userId, String newPw) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        boolean res = false;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(CHANGE_PASSWORD);
+            stm.setString(1, newPw);
+            stm.setString(2, userId);
+            stm.executeUpdate();
+            res = true;
+        } catch (SQLException ex) {
+            logError("Exception found on changePassword() method", ex);
+            res = false;
+        } finally {
+            context.closeStatement(stm);
+        }
+        return res;
+    }
+    
 }
