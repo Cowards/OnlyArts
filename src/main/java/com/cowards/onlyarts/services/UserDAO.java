@@ -30,6 +30,15 @@ public class UserDAO {
             + "([user_id],[role_id],[first_name],[last_name],[phone]"
             + "[email],[address],[join_date],[bio],[status],[password])"
             + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+     private static final String UPDATE_USER_INFO
+            = "UPDATE [dbo].[Users] SET "
+            + "[first_name] = ?,"
+            + "[last_name] =? ,"
+            + "[phone] = ?,"
+            + "[email] = ?,"
+            + "[address] = ?,"
+            + "[bio] = ? "
+            + "WHERE [user_id] = ? ";
 
     private void logError(String message, Exception ex) {
         Logger.getLogger(UserDAO.class.getName())
@@ -167,6 +176,32 @@ public class UserDAO {
             context.closeConnection(conn);
         }
         return res;
+    }
+    
+    public boolean updateUserInfo(UserDTO user) {
+        boolean check = false;
+        Connection conn = null;
+        PreparedStatement stm = null;
+        try {
+            conn = context.getConnection();
+            if (conn != null) {
+                stm = conn.prepareStatement(UPDATE_USER_INFO);
+                stm.setString(1, user.getFirstName());
+                stm.setString(2, user.getLastName());
+                stm.setString(3, user.getPhone());
+                stm.setString(4, user.getEmail());
+                stm.setString(5, user.getAddress());
+                stm.setString(6, user.getBio());
+                stm.setString(7, user.getUserId());
+                check = stm.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            logError("Exception found on updateUser() method", e);
+            check = false;
+        } finally {
+            context.closeStatement(stm);
+        }
+        return check;
     }
 
 }
