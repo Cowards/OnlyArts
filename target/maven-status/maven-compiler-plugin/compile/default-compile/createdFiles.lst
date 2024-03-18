@@ -9,6 +9,7 @@ com\cowards\onlyarts\repositories\report\ReportERROR.class
 com\cowards\onlyarts\services\ReactionDAO.class
 com\cowards\onlyarts\resources\v2\Artwork.class
 com\cowards\onlyarts\repositories\notification\NotificationERROR.class
+com\cowards\onlyarts\repositories\reaction\ReactionDTO.class
 com\cowards\onlyarts\resources\v1\Authentication.class
 com\cowards\onlyarts\resources\v1\Password.class
 com\cowards\onlyarts\services\ReportDAO.class
@@ -25,6 +26,7 @@ com\cowards\onlyarts\resources\v4\Request.class
 com\cowards\onlyarts\core\DBContext.class
 com\cowards\onlyarts\resources\v2\Reaction.class
 com\cowards\onlyarts\repositories\response\ResponseDTO.class
+com\cowards\onlyarts\router\Home.class
 com\cowards\onlyarts\repositories\comment\CommentDTO.class
 com\cowards\onlyarts\services\OrderDetailDAO.class
 com\cowards\onlyarts\resources\v3\User.class
@@ -43,13 +45,16 @@ com\cowards\onlyarts\repositories\user\UserDTO.class
 com\cowards\onlyarts\resources\v4\User.class
 com\cowards\onlyarts\config\ApplicationConfig.class
 com\cowards\onlyarts\resources\v2\Favor.class
+com\cowards\onlyarts\repositories\reaction\ReactionERROR.class
 com\cowards\onlyarts\services\CommentDAO.class
 com\cowards\onlyarts\repositories\category\CategoryDTO.class
+com\cowards\onlyarts\router\Logout.class
 com\cowards\onlyarts\resources\v4\Favor.class
 com\cowards\onlyarts\repositories\user\UserERROR.class
 com\cowards\onlyarts\services\FavorDAO.class
 com\cowards\onlyarts\services\NotificationDAO.class
 com\cowards\onlyarts\resources\v3\Cart.class
+com\cowards\onlyarts\router\Login.class
 com\cowards\onlyarts\services\FollowDAO.class
 com\cowards\onlyarts\resources\v3\Order.class
 com\cowards\onlyarts\services\ArtworkDAO.class

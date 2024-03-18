@@ -22,10 +22,14 @@ import java.util.logging.Logger;
  */
 public class CartDAO {
 
-    private static final String GET_ALL_CART_BY_USER_ID = "SELECT [user_id], [artwork_id] FROM Carts WHERE user_id = ?";
-    private static final String INSERT_CART = "INSERT INTO Carts ([user_id], [artwork_id]) VALUES(?, ?)";
-    private static final String DELETE_CART = "DELETE FROM Carts WHERE artwork_id = ? AND user_id = ?";
-    private static final String DELETE_ALL_BY_USER_ID = "DELETE FROM Carts WHERE user_id = ?";
+    private static final String GET_ALL_CART_BY_USER_ID
+            = "SELECT [user_id], [artwork_id] FROM Carts WHERE user_id = ?";
+    private static final String INSERT_CART
+            = "INSERT INTO Carts ([user_id], [artwork_id]) VALUES(?, ?)";
+    private static final String DELETE_CART
+            = "DELETE FROM Carts WHERE artwork_id = ? AND user_id = ?";
+    private static final String DELETE_ALL_BY_USER_ID
+            = "DELETE FROM Carts WHERE user_id = ?";
 
     private static final DBContext DB = DBContext.getInstance();
 

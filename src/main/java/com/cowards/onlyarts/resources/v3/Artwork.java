@@ -8,11 +8,9 @@ import com.cowards.onlyarts.services.ArtworkDAO;
 import com.cowards.onlyarts.services.TokenDAO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -27,30 +25,7 @@ public class Artwork {
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
-    @GET
-    @Path("/update/{artworkId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getOne(@PathParam("artworkId") String artworkId,
-            @HeaderParam("authtoken") String tokenString) {
-        try {
-            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
-
-            if (tokenDTO.isExpired()) {
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(new TokenERROR("Login timeout"))
-                        .build();
-            }
-
-            ArtworkDTO artworkDTO = artworkDao.getOne(artworkId);
-            return Response.ok(artworkDTO).build();
-        } catch (ArtworkERROR | TokenERROR e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e).build();
-        }
-    }
-
     @PUT
-    @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(ArtworkDTO artworkDTO,
@@ -64,16 +39,20 @@ public class Artwork {
             }
 
             if (!tokenDTO.getUserId().equals(artworkDTO.getOwnerId())) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
+                return Response.status(Response.Status.FORBIDDEN)
                         .entity(new TokenERROR("You are not allow update this artwork"))
                         .build();
             }
 
-            return artworkDao.update(artworkDTO)
-                    ? Response.ok(artworkDTO).build()
-                    : Response.status(Response.Status.NOT_ACCEPTABLE)
-                            .entity(new ArtworkERROR("Cannot update this artwork"))
-                            .build();
+            boolean check = artworkDao.update(artworkDTO);
+
+            if (check) {
+                artworkDTO = artworkDao.getArtwork(artworkDTO.getArtworkId());
+                return Response.ok(artworkDTO).build();
+            }
+
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ArtworkERROR("Cannot update artwork")).build();
         } catch (ArtworkERROR | TokenERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
@@ -81,13 +60,12 @@ public class Artwork {
     }
 
     @DELETE
-    @Path("/delete/{artworkId}")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("artworkId") String artworkId,
+    public Response delete(ArtworkDTO artworkDTO,
             @HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
-            ArtworkDTO artworkDTO = artworkDao.getOne(artworkId);
 
             if (tokenDTO.isExpired()) {
                 return Response.status(Response.Status.UNAUTHORIZED)
@@ -96,16 +74,23 @@ public class Artwork {
             }
 
             if (!tokenDTO.getUserId().equals(artworkDTO.getOwnerId())) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
+                return Response.status(Response.Status.FORBIDDEN)
                         .entity(new TokenERROR("You are not allow remove this artwork"))
                         .build();
             }
 
-            return artworkDao.delete(artworkId)
-                    ? Response.ok(artworkDTO).build()
-                    : Response.status(Response.Status.NOT_ACCEPTABLE)
-                            .entity(new ArtworkERROR("Cannot remove this artwork"))
-                            .build();
+            String artworkId = artworkDTO.getArtworkId();
+
+            boolean check = artworkDao.delete(artworkId);
+
+            if (check) {
+                artworkDTO = artworkDao.getArtwork(artworkId);
+                return Response.ok(artworkDTO).build();
+            }
+
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ArtworkERROR("Cannot remove artwork"))
+                    .build();
         } catch (ArtworkERROR | TokenERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)

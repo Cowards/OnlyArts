@@ -15,7 +15,12 @@ import java.util.logging.Logger;
 
 public class OrderDAO {
 
-    private static final String GET_ALL = "SELECT [order_id], [user_id], "
+    private static final String GET_ALL
+            = "SELECT [order_id], [user_id], "
+            + "[status], [payment_method], [order_time], [total_price] "
+            + "FROM Orders";
+    private static final String GET_TOP_10
+            = "SELECT TOP (10) [order_id], [user_id], "
             + "[status], [payment_method], [order_time], [total_price] "
             + "FROM Orders";
     private static final String GET_ALL_BY_USER_ID
@@ -251,6 +256,34 @@ public class OrderDAO {
         } catch (SQLException e) {
             logError("Exception found on "
                     + "getAllByOwnerId(String userId) method", e);
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stm);
+        }
+        return list;
+    }
+
+    public List<OrderDTO> getTop10() {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        List<OrderDTO> list = new ArrayList<>();
+        try {
+            conn = DB.getConnection();
+            stm = conn.prepareStatement(GET_TOP_10);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                OrderDTO ordersDTO = new OrderDTO();
+                ordersDTO.setOrderId(rs.getString(1));
+                ordersDTO.setUserId(rs.getString(2));
+                ordersDTO.setStatus(rs.getInt(3));
+                ordersDTO.setPaymentMethod(rs.getString(4));
+                ordersDTO.setOrderTime(rs.getDate(5));
+                ordersDTO.setTotalPrice(rs.getFloat(6));
+                list.add(ordersDTO);
+            }
+        } catch (SQLException e) {
+            logError("Exception found on getAll() method", e);
         } finally {
             DB.closeResultSet(rs);
             DB.closeStatement(stm);
