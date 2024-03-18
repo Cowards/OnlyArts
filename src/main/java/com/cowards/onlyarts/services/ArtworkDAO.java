@@ -1,6 +1,5 @@
 package com.cowards.onlyarts.services;
 
-import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.core.DBContext;
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
@@ -22,35 +21,30 @@ public class ArtworkDAO {
             = "SELECT [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
             + " FROM [dbo].[Artworks]";
+    private static final String GET_TOP_10_ARTWORKS
+            = "SELECT TOP (10) [artwork_id], [owner_id], [cate_id], [name], [description], "
+            + "[artwork_image], [price], [released_date], [status]"
+            + " FROM [dbo].[Artworks]";
     private static final String ADD_ARTWORK = "INSERT INTO [dbo].[Artworks]"
             + "(artwork_id, owner_id, cate_id, name, "
             + "description, artwork_image, price, status) "
-            + "VALUES(?, ?, ?, ?, ?, ?, 0, 1)";
+            + "VALUES(?, ?, ?, ?, ?, ?, 0, 0)";
     private static final String UPDATE_ARTWORK_PRICE
             = "UPDATE [dbo].[Artworks]"
             + "SET [price] = ?, [status] = 0 "
             + "WHERE [artwork_id] = ?";
-    private static final String UPDATE_ARTWORK_INFO
-            = "UPDATE [dbo].[Artworks] "
-            + "SET "
-            + "[cate_id] = ?, "
-            + "[name] = ?, "
-            + "[description] = ?, "
-            + "[artwork_image] = ?, "
-            + "[price] = ? "
-            + " WHERE artwork_id = ?";
     private static final String REMOVE_ARTWORK = "UPDATE Artworks "
             + "SET status = 1"
             + "WHERE artwork_id = ?";
-    private static final String GET_ARTWORK = "SELECT [artwork_id], [owner_id], [cate_id], [name], [description], "
+    private static final String GET_ARTWORK
+            = "SELECT [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
-            + " FROM Artworks WHERE artwork_id = ?";
-    private static final String GET_ALL_ARTWORK = "SELECT [artwork_id], [owner_id], [cate_id], [name], [description], "
-            + "[artwork_image], [price], [released_date], [status] "
-            + "FROM Artworks";
-    private static final String UPDATE = "UPDATE Artworks SET"
-            + " cate_id = ?, name = ?, description = ?, "
-            + "artwork_image = ?, price = ?, status = ? WHERE artwork_id = ?";
+            + " FROM [dbo].[Artworks] WHERE [artwork_id] = ?";
+    private static final String UPDATE
+            = "UPDATE [dbo].[Artworks]"
+            + " SET [cate_id] = ?, [name] = ?, [description] = ?,"
+            + " [artwork_image] = ?, [price] = ?, [status] = ?"
+            + " WHERE [artwork_id] = ?";
     private static final String SEARCH_BY_TYPE = "SELECT aw.artwork_id, u.first_name, u.last_name, c.cate_name,\n"
             + "aw.name, aw.description, aw.artwork_image, aw.price, aw.released_date, aw.status FROM Artworks aw\n"
             + "LEFT JOIN Users u on aw.owner_id = u.user_id\n"
@@ -81,7 +75,7 @@ public class ArtworkDAO {
         }
         return instance;
     }
-    
+
     public List<ArtworkDTO> getAll() {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -113,7 +107,7 @@ public class ArtworkDAO {
         }
         return artworks;
     }
-    
+
     public List<ArtworkDTO> getArtworkByOwner(String ownerId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -154,7 +148,7 @@ public class ArtworkDAO {
         ArtworkDTO artwork = null;
         try {
             conn = context.getConnection();
-            stm = conn.prepareStatement(GET_ARTWORKS + " WHERE [artwork_id] = ?");
+            stm = conn.prepareStatement(GET_ARTWORK);
             stm.setString(1, artowrkId);
             rs = stm.executeQuery();
             if (rs.next()) {
@@ -180,49 +174,14 @@ public class ArtworkDAO {
         return artwork;
     }
 
-    public List<ArtworkDTO> searchArtwork(String keyword) {
-        Connection conn = null;
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        List<ArtworkDTO> artworks = new ArrayList<>();
-        try {
-            conn = context.getConnection();
-            stm = conn.prepareStatement(GET_ARTWORKS + " WHERE [name] LIKE ?");
-            stm.setString(1, '%' + keyword + '%');
-            rs = stm.executeQuery();
-            ArtworkDTO artwork = null;
-            while (rs.next()) {
-                artwork = new ArtworkDTO();
-                artwork.setArtworkId(rs.getString(1));
-                artwork.setOwnerId(rs.getString(2));
-                artwork.setCateId(rs.getString(3));
-                artwork.setName(rs.getString(4));
-                artwork.setDescription(rs.getString(5));
-                artwork.setArtworkImage(rs.getString(6));
-                artwork.setPrice(rs.getFloat(7));
-                artwork.setReleasedDate(rs.getDate(8));
-                artwork.setStatus(rs.getInt(9));
-                artworks.add(artwork);
-            }
-        } catch (SQLException ex) {
-            logError("Exception found on searchArtwork() method", ex);
-        } finally {
-            context.closeResultSet(rs);
-            context.closeStatement(stm);
-        }
-        return artworks;
-    }
-
     public boolean addArtwork(ArtworkDTO artwork) {
         Connection conn = null;
         PreparedStatement stm = null;
-        String artworkId = null;
         boolean check = false;
         try {
             conn = context.getConnection();
             stm = conn.prepareStatement(ADD_ARTWORK);
-            artworkId = CodeGenerator.generateUUID(20);
-            stm.setString(1, artworkId);
+            stm.setString(1, artwork.getArtworkId());
             stm.setString(2, artwork.getOwnerId());
             stm.setString(3, artwork.getCateId());
             stm.setString(4, artwork.getName());
@@ -256,29 +215,6 @@ public class ArtworkDAO {
         return res;
     }
 
-    public boolean updateArtworkInfo(ArtworkDTO artworkDTO) {
-        Connection conn = null;
-        PreparedStatement stm = null;
-        boolean res = false;
-        try {
-            conn = context.getConnection();
-            stm = conn.prepareStatement(UPDATE_ARTWORK_INFO);
-            stm.setString(1, artworkDTO.getCateId());
-            stm.setString(2, artworkDTO.getName());
-            stm.setString(3, artworkDTO.getDescription());
-            stm.setString(4, artworkDTO.getArtworkImage());
-            stm.setFloat(5, artworkDTO.getPrice());
-            stm.setString(7, artworkDTO.getArtworkId());
-            res = stm.executeUpdate() > 0;
-        } catch (SQLException ex) {
-            logError("Exception found on updateArtworkInfo() method", ex);
-            res = false;
-        } finally {
-            context.closeStatement(stm);
-        }
-        return res;
-    }
-
     public boolean delete(String artworkId) throws ArtworkERROR {
         Connection conn = null;
         boolean check = false;
@@ -298,71 +234,6 @@ public class ArtworkDAO {
             context.closeStatement(stm);
         }
         return check;
-    }
-
-    public ArtworkDTO getOne(String id) throws ArtworkERROR {
-        Connection conn = null;
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        ArtworkDTO artworkDTO = null;
-        try {
-            conn = context.getConnection();
-            stm = conn.prepareStatement(GET_ARTWORK);
-            stm.setString(1, id);
-            rs = stm.executeQuery();
-            artworkDTO = new ArtworkDTO();
-            if (rs.next()) {
-                artworkDTO.setArtworkId(rs.getString(1));
-                artworkDTO.setOwnerId(rs.getString(2));
-                artworkDTO.setCateId(rs.getString(3));
-                artworkDTO.setName(rs.getString(4));
-                artworkDTO.setDescription(rs.getString(5));
-                artworkDTO.setArtworkImage(rs.getString(6));
-                artworkDTO.setPrice(rs.getFloat(7));
-                artworkDTO.setReleasedDate(rs.getDate(8));
-                artworkDTO.setStatus(rs.getInt(9));
-            } else {
-                throw new ArtworkERROR("This id does not exist in the system");
-            }
-        } catch (SQLException e) {
-            logError("Exception found on getOne(String id) method", e);
-        } finally {
-            context.closeResultSet(rs);
-            context.closeStatement(stm);
-        }
-        return artworkDTO;
-    }
-
-    public List<ArtworkDTO> getAll(String userId) {
-        Connection conn = null;
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        List<ArtworkDTO> list = new ArrayList<>();
-        try {
-            conn = context.getConnection();
-            stm = conn.prepareStatement(GET_ALL_ARTWORK + " WHERE owner_id = ?");
-            stm.setString(1, userId);
-            rs = stm.executeQuery();
-            while (rs.next()) {
-                ArtworkDTO artworkDTO = new ArtworkDTO();
-                artworkDTO.setArtworkId(rs.getString(1));
-                artworkDTO.setOwnerId(rs.getString(2));
-                artworkDTO.setCateId(rs.getString(3));
-                artworkDTO.setName(rs.getString(4));
-                artworkDTO.setDescription(rs.getString(5));
-                artworkDTO.setArtworkImage(rs.getString(6));
-                artworkDTO.setPrice(rs.getFloat(7));
-                artworkDTO.setReleasedDate(rs.getDate(8));
-                artworkDTO.setStatus(rs.getInt(9));
-                list.add(artworkDTO);
-            }
-        } catch (SQLException e) {
-            logError("Exception found on count(String userId) method", e);
-        } finally {
-            context.closeResultSet(rs);
-            context.closeStatement(stm);
-        }
-        return list;
     }
 
     public boolean update(ArtworkDTO artworkDTO) throws ArtworkERROR {
@@ -495,4 +366,35 @@ public class ArtworkDAO {
         return list;
     }
 
+    public List<ArtworkDTO> getTop10() {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        List<ArtworkDTO> artworks = new ArrayList<>();
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(GET_TOP_10_ARTWORKS);
+            rs = stm.executeQuery();
+            ArtworkDTO artwork = null;
+            while (rs.next()) {
+                artwork = new ArtworkDTO();
+                artwork.setArtworkId(rs.getString(1));
+                artwork.setOwnerId(rs.getString(2));
+                artwork.setCateId(rs.getString(3));
+                artwork.setName(rs.getString(4));
+                artwork.setDescription(rs.getString(5));
+                artwork.setArtworkImage(rs.getString(6));
+                artwork.setPrice(rs.getFloat(7));
+                artwork.setReleasedDate(rs.getDate(8));
+                artwork.setStatus(rs.getInt(9));
+                artworks.add(artwork);
+            }
+        } catch (SQLException ex) {
+            logError("Exception found on getAll() method", ex);
+        } finally {
+            context.closeResultSet(rs);
+            context.closeStatement(stm);
+        }
+        return artworks;
+    }
 }

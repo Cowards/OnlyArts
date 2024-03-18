@@ -18,7 +18,6 @@ public class ReportDAO {
     private static ReportDAO instance;
     private static final DBContext DB = DBContext.getInstance();
 
-    //SQL query
     private static final String ADD_REPORT
             = "INSERT INTO Reports (report_id, artwork_id, reporter_id, description, status) "
             + "VALUES (?, ?, ?, ?, 0)";
@@ -62,7 +61,7 @@ public class ReportDAO {
      * @param report The ReportDTO object containing the report details.
      * @return True if the artwork is reported successfully; otherwise, false.
      */
-    public static boolean reportArtwork(String userId, ReportDTO report) {
+    public boolean reportArtwork(String userId, ReportDTO report) {
         Connection conn = null;
         PreparedStatement stm = null;
         boolean check = false;
