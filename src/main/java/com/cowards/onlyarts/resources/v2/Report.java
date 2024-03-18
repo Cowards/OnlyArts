@@ -20,10 +20,9 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
-@Path("v2/report/artworks")
+@Path("v2/reports")
 public class Report {
 
     private final ReportDAO reportDAO = ReportDAO.getInstance();
@@ -33,14 +32,13 @@ public class Report {
     private final UserDAO userDAO = UserDAO.getInstance();
 
     @POST
-    @Path("/addnewreport")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response reportArtwork(@HeaderParam("authtoken") String tokenString, ReportDTO report) {
+    public Response reportArtwork(@HeaderParam("authtoken") String tokenString,
+            ReportDTO report) {
         try {
             String userId = tokenDAO.getToken(tokenString).getUserId();
-            boolean checkSellArtwork = false;
-            checkSellArtwork = reportDAO.reportArtwork(userId, report);
+            boolean checkSellArtwork = reportDAO.reportArtwork(userId, report);
             return checkSellArtwork
                     ? Response.status(Response.Status.NO_CONTENT).build()
                     : Response.status(Response.Status.NOT_FOUND).build();
@@ -50,18 +48,18 @@ public class Report {
     }
 
     @GET
-    @Path("/showall")
-    public Response getAllReports(@HeaderParam("authtoken") String tokenString) throws TokenERROR, UserERROR {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllReports(@HeaderParam("authtoken") String tokenString)
+            throws TokenERROR, UserERROR {
         TokenDTO tokenDto = tokenDAO.getToken(tokenString);
         UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
         if (!userDTO.getRoleId().equals("AD")) {
-            return Response.status(Response.Status.UNAUTHORIZED)
+            return Response.status(Response.Status.FORBIDDEN)
                     .entity("You cannot access this page").build();
         }
-        List<ReportDTO> listReport = new ArrayList<>();
-        listReport = reportDAO.getAllReports();
+        List<ReportDTO> listReport = reportDAO.getAllReports();
         if (!listReport.isEmpty()) {
-            return Response.ok(listReport, MediaType.APPLICATION_JSON).build();
+            return Response.ok(listReport).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -69,17 +67,18 @@ public class Report {
 
     @GET
     @Path("/handlelist")
-    public Response getReportHandleList(@HeaderParam("authtoken") String tokenString) throws UserERROR, TokenERROR {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReportHandleList(@HeaderParam("authtoken") String tokenString)
+            throws UserERROR, TokenERROR {
         TokenDTO tokenDto = tokenDAO.getToken(tokenString);
         UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
         if (!userDTO.getRoleId().equals("AD")) {
-            return Response.status(Response.Status.UNAUTHORIZED)
+            return Response.status(Response.Status.FORBIDDEN)
                     .entity("You cannot access this page").build();
         }
-        List<ReportDTO> listReport = new ArrayList<>();
-        listReport = reportDAO.getReportHandleList();
+        List<ReportDTO> listReport = reportDAO.getReportHandleList();
         if (!listReport.isEmpty()) {
-            return Response.ok(listReport, MediaType.APPLICATION_JSON).build();
+            return Response.ok(listReport).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -89,7 +88,8 @@ public class Report {
     @Path("/processing/{choice}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response processReport(@HeaderParam("authtoken") String tokenString, ReportDTO report, @PathParam("choice") String choice) throws ArtworkERROR {
+    public Response processReport(@HeaderParam("authtoken") String tokenString, 
+            ReportDTO report, @PathParam("choice") String choice) throws ArtworkERROR {
         try {
             UserDTO currentUser = userDAO.getUserById(tokenDAO.getToken(tokenString).getUserId());
             if (currentUser.getRoleId().equals("AD")) {
