@@ -20,8 +20,8 @@ public class TokenDAO {
             + "FROM [dbo].[Tokens] WHERE [token] = ?";
     private static final String ADD_TOKEN = "INSERT INTO [dbo].[Tokens]"
             + "([user_id],[token],[validDate],[expiredDate],[status]) VALUES (?, ?, ?, ?,?)";
-    private static final String DEACTIVATE_TOKEN = "UPADTE [dbo].[Tokens]"
-            + "SET [status] = ?"
+    private static final String DEACTIVATE_TOKEN = "UPDATE [dbo].[Tokens] "
+            + "SET [status] = ? "
             + "WHERE [token] = ?";
 
     private TokenDAO() {
@@ -62,7 +62,6 @@ public class TokenDAO {
 
             context.closeResultSet(rs);
             context.closeStatement(stm);
-            context.closeConnection(conn);
         } catch (SQLException ex) {
             Logger.getLogger(TokenDAO.class.getName()).log(Level.SEVERE,
                     "Exception found on getToken() method ", ex);
@@ -94,7 +93,6 @@ public class TokenDAO {
             stm.executeUpdate();
 
             context.closeStatement(stm);
-            context.closeConnection(conn);
         } catch (SQLException ex) {
             Logger.getLogger(TokenDAO.class.getName()).log(Level.SEVERE,
                     "Exception founf on addResetPasswordToken method", ex);
@@ -120,7 +118,6 @@ public class TokenDAO {
             stm.executeUpdate();
 
             context.closeStatement(stm);
-            context.closeConnection(conn);
         } catch (SQLException ex) {
             Logger.getLogger(TokenDAO.class.getName()).log(Level.SEVERE,
                     "Exception founf on addResetPasswordToken method", ex);
@@ -142,7 +139,6 @@ public class TokenDAO {
             stm.executeUpdate();
 
             context.closeStatement(stm);
-            context.closeConnection(conn);
         } catch (SQLException ex) {
             Logger.getLogger(TokenDAO.class.getName()).log(Level.SEVERE,
                     "Exception found on deactivateToken method", ex);
