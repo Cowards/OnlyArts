@@ -23,6 +23,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,7 +41,6 @@ public class Order {
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
 
     @POST
-    @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response insert(OrderDTO orderDTO,
@@ -67,7 +67,10 @@ public class Order {
                 return Response.status(Response.Status.NOT_ACCEPTABLE)
                         .build();
             }
+            
             String orderId = orderDTO.getOrderId();
+            orderDTO = orderDao.getOne(orderId);
+            
             result.put("order", orderDTO);
             OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
             orderDetailDTO.setOrderId(orderId);
@@ -78,7 +81,7 @@ public class Order {
                     return Response.status(Response.Status.NOT_ACCEPTABLE)
                             .build();
                 }
-                ArtworkDTO artworkDTO = artworkDao.getOne(artworkId);
+                ArtworkDTO artworkDTO = artworkDao.getArtwork(artworkId);
                 result.put(artworkId, artworkDTO);
             }
 
@@ -114,16 +117,43 @@ public class Order {
                 String orderId = orderDTO.getOrderId();
                 List<OrderDetailDTO> orderDetailDTOs
                         = orderDetailDao.getAll(orderId);
-                result.put(orderId, orderDetailDTOs);
+                List<ArtworkDTO> artworkDTOs
+                        = new ArrayList<>();
+                for (OrderDetailDTO orderDetailDTO : orderDetailDTOs) {
+                    ArtworkDTO artworkDTO 
+                            = artworkDao.getArtwork(orderDetailDTO.getArtworkId());
+                    artworkDTOs.add(artworkDTO);
+                }
+                
+                result.put(orderId, artworkDTOs);
             }
 
             result.put("orders", orderDTOs);
 
             return Response.ok(result).build();
-        } catch (TokenERROR e) {
+        } catch (TokenERROR | ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)
                     .build();
+        }
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString) {
+        try {
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            String userId = tokenDTO.getUserId();
+            if (tokenDTO.isExpired()) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new TokenERROR("Login timeout"))
+                        .build();
+            }
+            List<OrderDTO> list = orderDao.getAllByOwnerId(userId);
+            return Response.ok(list).build();
+        } catch (TokenERROR e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e).build();
         }
     }
 }
