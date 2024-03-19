@@ -45,7 +45,7 @@ public class CartDAO {
         return instance;
     }
 
-    public List<CartDTO> getAll(String user_id) {
+    public List<CartDTO> getAll(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -53,7 +53,7 @@ public class CartDAO {
         try {
             conn = DB.getConnection();
             stm = conn.prepareStatement(GET_ALL_CART_BY_USER_ID);
-            stm.setString(1, user_id);
+            stm.setString(1, userId);
             rs = stm.executeQuery();
             while (rs.next()) {
                 CartDTO cartDTO = new CartDTO();

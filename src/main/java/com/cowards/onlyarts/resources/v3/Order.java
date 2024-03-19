@@ -59,35 +59,41 @@ public class Order {
                         .build();
             }
             HashMap<String, Object> result = new HashMap();
-
-            orderDTO.setOrderId(CodeGenerator.generateUUID(20));
+            List<ArtworkDTO> artworkDTOs = new ArrayList<>();
+            String orderId = CodeGenerator.generateUUID(20);
+            float totalPrice = 0;
+            for (CartDTO cartDTO : cartDTOs) {
+                String artworkId = cartDTO.getArtworkId();
+                ArtworkDTO artworkDTO = artworkDao.getArtwork(artworkId);
+                totalPrice += artworkDTO.getPrice();
+                artworkDTOs.add(artworkDTO);
+            }
+            result.put("artworks", artworkDTOs);
+            if (!cartDao.delete(userId)) {
+                return Response.status(Response.Status.NOT_ACCEPTABLE)
+                        .build();
+            }
+            
+            orderDTO.setTotalPrice(totalPrice);
+            orderDTO.setOrderId(orderId);
             orderDTO.setUserId(userId);
             orderDTO.setStatus(0);
             if (!orderDao.insert(orderDTO)) {
                 return Response.status(Response.Status.NOT_ACCEPTABLE)
                         .build();
             }
-
-            String orderId = orderDTO.getOrderId();
             orderDTO = orderDao.getOne(orderId);
-
             result.put("order", orderDTO);
+            
             OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
             orderDetailDTO.setOrderId(orderId);
-            for (CartDTO cartDTO : cartDTOs) {
-                String artworkId = cartDTO.getArtworkId();
+            for (ArtworkDTO artworkDTO : artworkDTOs) {
+                String artworkId = artworkDTO.getArtworkId();
                 orderDetailDTO.setArtworkId(artworkId);
                 if (!orderDetailDao.insert(orderDetailDTO)) {
                     return Response.status(Response.Status.NOT_ACCEPTABLE)
                             .build();
                 }
-                ArtworkDTO artworkDTO = artworkDao.getArtwork(artworkId);
-                result.put(artworkId, artworkDTO);
-            }
-
-            if (!cartDao.delete(userId)) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
-                        .build();
             }
 
             return Response.ok(result).build();
@@ -98,7 +104,7 @@ public class Order {
     }
 
     @GET
-    @Path("/status")
+    @Path("/ordered")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrders(@HeaderParam("authtoken") String tokenString) {
         try {
@@ -139,7 +145,7 @@ public class Order {
     }
 
     @GET
-    @Path("/owner")
+    @Path("/recieved")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString) {
         try {

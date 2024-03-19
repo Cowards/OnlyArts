@@ -65,30 +65,11 @@ public class Report {
         }
     }
 
-    @GET
-    @Path("/handlelist")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getReportHandleList(@HeaderParam("authtoken") String tokenString)
-            throws UserERROR, TokenERROR {
-        TokenDTO tokenDto = tokenDAO.getToken(tokenString);
-        UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
-        if (!userDTO.getRoleId().equals("AD")) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("You cannot access this page").build();
-        }
-        List<ReportDTO> listReport = reportDAO.getReportHandleList();
-        if (!listReport.isEmpty()) {
-            return Response.ok(listReport).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-    }
-
     @POST
     @Path("/processing/{choice}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response processReport(@HeaderParam("authtoken") String tokenString, 
+    public Response processReport(@HeaderParam("authtoken") String tokenString,
             ReportDTO report, @PathParam("choice") String choice) throws ArtworkERROR {
         try {
             UserDTO currentUser = userDAO.getUserById(tokenDAO.getToken(tokenString).getUserId());
@@ -126,7 +107,7 @@ public class Report {
                 throw new UserERROR("You do not have permission to do this action!");
             }
         } catch (TokenERROR | UserERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ex).build();
         }
     }
 }
