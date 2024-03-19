@@ -43,8 +43,11 @@ public class ResponseAPI {
             RequestDTO request = requestDAO.getRequestById(responseDTO.getRequestId());
             if (request.getPublisherId().equalsIgnoreCase(user.getUserId())){
                 boolean check = responseDAO.addResponse(responseDTO);
+                if (check) {
+                    responseDTO = responseDAO.getResponseById(request.getRequestId());
+                }
                 return check ?
-                        Response.status(Response.Status.OK).build():
+                        Response.status(Response.Status.OK).entity(responseDTO).build():
                         Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new ResponseERROR("You can not response for this request");
@@ -103,8 +106,11 @@ public class ResponseAPI {
             RequestDTO request = requestDAO.getRequestById(response.getRequestId());
             if (user.getUserId().equalsIgnoreCase(request.getPublisherId())){
                 boolean check = responseDAO.changeStatus(response,0b10);
+                if (check) {
+                    response = responseDAO.getResponseById(request.getRequestId());
+                }
                 return check ?
-                        Response.status(Response.Status.OK).build():
+                        Response.status(Response.Status.OK).entity(response).build():
                         Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new ResponseERROR("You can not delete this response");
@@ -125,8 +131,11 @@ public class ResponseAPI {
             RequestDTO request = requestDAO.getRequestById(response.getRequestId());
             if (user.getUserId().equalsIgnoreCase(request.getCustomerID())){
                 boolean check = responseDAO.changeStatus(response,0b01);
+                if (check) {
+                    response = responseDAO.getResponseById(request.getRequestId());
+                }
                 return check ?
-                        Response.status(Response.Status.OK).build():
+                        Response.status(Response.Status.OK).entity(response).build():
                         Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new ResponseERROR("You can not seen this response");

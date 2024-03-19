@@ -66,7 +66,8 @@ public class User {
                     || "AD".equals(loginUser.getRoleId())) {
                 boolean checkUpdate = userDao.updateUserInfo(user);
                 if (checkUpdate) {
-                    return Response.status(200).build();
+                    loginUser = userDao.getUserById(token.getUserId());
+                    return Response.status(200).entity(loginUser).build();
                 } else {
                     throw new TokenERROR("You cannot update this account information");
                 }
@@ -82,6 +83,7 @@ public class User {
 
     @PUT
     @Path("ban/{userid}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response banUser(@HeaderParam("authtoken") String tokenString,
             @PathParam("userid") String userId) {
         try {
@@ -97,7 +99,8 @@ public class User {
                     boolean check = userDao.changeStatus(user.getUserId(),
                             user.getStatus(), 0b100);
                     if (check) {
-                        return Response.status(200).build();
+                        user = userDao.getUserById(userId);
+                        return Response.status(200).entity(user).build();
                     } else {
                         throw new UserERROR("Cannot ban this user");
                     }
@@ -114,6 +117,7 @@ public class User {
 
     @PUT
     @Path("unban/{userid}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response unbanUser(@HeaderParam("authtoken") String tokenString,
             @PathParam("userid") String userId) {
         try {
@@ -129,7 +133,8 @@ public class User {
                     boolean check = userDao.changeStatus(user.getUserId(),
                             user.getStatus(), 0b100);
                     if (check) {
-                        return Response.status(200).build();
+                        user = userDao.getUserById(userId);
+                        return Response.status(200).entity(user).build();
                     } else {
                         throw new UserERROR("Cannot unban this user");
                     }
