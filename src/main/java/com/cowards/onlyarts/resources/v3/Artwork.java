@@ -8,12 +8,14 @@ import com.cowards.onlyarts.services.ArtworkDAO;
 import com.cowards.onlyarts.services.TokenDAO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 
 /**
  *
@@ -95,6 +97,19 @@ public class Artwork {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)
                     .build();
+        }
+    }
+
+    @GET
+    @Path("/top10")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTop10Artworks() {
+        try {
+            List<ArtworkDTO> list = artworkDao.getTop10();
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e).build();
         }
     }
 }

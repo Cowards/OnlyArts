@@ -24,8 +24,8 @@ public class UserDAO {
             + ",[address],[avatar],[join_date],[bio],[status],[password]"
             + " FROM [dbo].[Users]";
     private static final String CHANGE_PASSWORD
-            = "UPDATE [dbo].[Users]"
-            + "SET [password] = ?"
+            = "UPDATE [dbo].[Users] "
+            + "SET [password] = ? "
             + "WHERE [user_id] = ?";
     private static final String CHANGE_STATUS
             = "UPDATE [Users] "
@@ -33,7 +33,7 @@ public class UserDAO {
             + "WHERE [user_id] = ?";
     private static final String ADD_USER
             = "INSERT INTO [dbo].[Users]"
-            + "([user_id],[role_id],[first_name],[last_name],[phone]"
+            + "([user_id],[role_id],[first_name],[last_name],[phone],"
             + "[email],[address],[bio],[status],[password],[avatar])"
             + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     private static final String UPDATE_USER_INFO
@@ -57,7 +57,8 @@ public class UserDAO {
             = "SELECT TOP (10) [user_id]"
             + ",[role_id],[first_name],[last_name],[phone],[email]"
             + ",[address],[avatar],[join_date],[bio],[status],[password]"
-            + " FROM [dbo].[Users]";
+            + " FROM [dbo].[Users]"
+            + " ORDER BY [join_date] DESC";
     private static final String GET_FOLLOWER = "SELECT tb2.[user_id],[role_id],"
             + "[first_name],[last_name],[avatar],[phone],[email],[address],"
             + "[join_date],[bio],[status],[password] "
@@ -97,9 +98,9 @@ public class UserDAO {
             stm.setString(6, user.getEmail());
             stm.setString(7, user.getAddress());
             stm.setString(8, user.getBio());
-            stm.setInt(10, 0b000);
-            stm.setString(11, user.getPassword());
-            stm.setString(12, user.getAvatar());
+            stm.setInt(9, 0b000);
+            stm.setString(10, user.getPassword());
+            stm.setString(11, user.getAvatar());
             stm.executeUpdate();
             user.setUserId(userId);
         } catch (SQLException ex) {
@@ -249,7 +250,6 @@ public class UserDAO {
         return check;
     }
 
-
     public List<UserDTO> getUserReaction(String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -356,7 +356,7 @@ public class UserDAO {
         }
         return followerList;
     }
-    
+
     public List<UserDTO> getTop10() {
         List<UserDTO> list = new ArrayList<>();
         Connection conn = null;

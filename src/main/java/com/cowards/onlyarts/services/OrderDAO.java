@@ -22,7 +22,8 @@ public class OrderDAO {
     private static final String GET_TOP_10
             = "SELECT TOP (10) [order_id], [user_id], "
             + "[status], [payment_method], [order_time], [total_price] "
-            + "FROM Orders";
+            + "FROM Orders "
+            + "ORDER BY [order_time] DESC";
     private static final String GET_ALL_BY_USER_ID
             = "SELECT [order_id], [user_id], [status], [payment_method], "
             + "[order_time], [total_price] FROM Orders WHERE user_id = ?";
