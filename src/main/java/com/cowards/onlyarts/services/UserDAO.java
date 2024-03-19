@@ -57,7 +57,8 @@ public class UserDAO {
             = "SELECT TOP (10) [user_id]"
             + ",[role_id],[first_name],[last_name],[phone],[email]"
             + ",[address],[avatar],[join_date],[bio],[status],[password]"
-            + " FROM [dbo].[Users]";
+            + " FROM [dbo].[Users]"
+            + " ORDER BY [join_date] DESC";
     private static final String GET_FOLLOWER = "SELECT tb2.[user_id],[role_id],"
             + "[first_name],[last_name],[avatar],[phone],[email],[address],"
             + "[join_date],[bio],[status],[password] "
