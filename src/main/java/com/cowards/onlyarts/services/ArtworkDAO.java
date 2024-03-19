@@ -24,7 +24,8 @@ public class ArtworkDAO {
     private static final String GET_TOP_10_ARTWORKS
             = "SELECT TOP (10) [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
-            + " FROM [dbo].[Artworks]";
+            + " FROM [dbo].[Artworks]"
+            + " ORDER BY [released_date] DESC";
     private static final String ADD_ARTWORK = "INSERT INTO [dbo].[Artworks]"
             + "(artwork_id, owner_id, cate_id, name, "
             + "description, artwork_image, price, status) "
@@ -390,7 +391,7 @@ public class ArtworkDAO {
                 artworks.add(artwork);
             }
         } catch (SQLException ex) {
-            logError("Exception found on getAll() method", ex);
+            logError("Exception found on getTop10() method", ex);
         } finally {
             context.closeResultSet(rs);
             context.closeStatement(stm);
