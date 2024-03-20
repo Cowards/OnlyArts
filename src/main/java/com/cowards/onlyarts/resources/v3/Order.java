@@ -26,6 +26,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -47,11 +49,6 @@ public class Order {
             @HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
-            if (tokenDTO.isExpired()) {
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(new TokenERROR("Login timeout"))
-                        .build();
-            }
             String userId = tokenDTO.getUserId();
             List<CartDTO> cartDTOs = cartDao.getAll(userId);
             if (cartDTOs.isEmpty()) {
@@ -91,9 +88,15 @@ public class Order {
             }
 
             return Response.ok(result).build();
-        } catch (OrderDetailERROR | TokenERROR | ArtworkERROR | OrderERROR e) {
+        } catch (ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
+        } catch (OrderERROR | OrderDetailERROR ex) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE)
+                    .entity(ex).build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex).build();
         }
     }
 
@@ -128,17 +131,21 @@ public class Order {
             result.put("orders", orderDTOs);
 
             return Response.ok(result).build();
-        } catch (TokenERROR | ArtworkERROR e) {
+        } catch (ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)
                     .build();
+        } catch (TokenERROR e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e).build();
         }
     }
 
     @GET
     @Path("/owner")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString) {
+    public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString
+    ) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
             String userId = tokenDTO.getUserId();
@@ -161,8 +168,12 @@ public class Order {
                 result.put(order.getOrderId(), artworks);
             }
             return Response.ok(result).build();
-        } catch (TokenERROR | ArtworkERROR e) {
+        } catch (ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e)
+                    .build();
+        } catch (TokenERROR e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(e).build();
         }
     }
