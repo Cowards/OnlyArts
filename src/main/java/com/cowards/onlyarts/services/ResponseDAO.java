@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,8 +18,8 @@ public class ResponseDAO {
     private static ResponseDAO instance;
     private static final DBContext DB = DBContext.getInstance();
     private static final String ADD_RESPONSE = "INSERT INTO [dbo].[Responses] ([request_id] ,"
-            + "[response_id] ,[image] ,[description],[status]) "
-            + "VALUES (?,?,?,?,?)";
+            + "[response_id] ,[image] ,[description],[status],[response_time]) "
+            + "VALUES (?,?,?,?,?,?)";
     private static final String GET_RESPONSE_BY_ID = "SELECT [request_id] ,[response_id] ,"
             + "[image] ,[description] ,[response_time] ,[status] "
             + "FROM [dbo].[Responses] WHERE [response_id] = ?";
@@ -64,6 +65,7 @@ public class ResponseDAO {
                 stm.setString(3, responseDTO.getImage());
                 stm.setString(4, responseDTO.getDescription());
                 stm.setInt(5, responseDTO.getStatus());
+                stm.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
                 check = stm.executeUpdate() > 0;
             }
         } catch (SQLException e) {

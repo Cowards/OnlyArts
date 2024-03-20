@@ -84,13 +84,16 @@ public class Request {
                 request.setCustomerID(userId);
                 request.setRequestId(requestId);
                 boolean checkInsert = requestDAO.addRequest(request);
+                if (checkInsert) {
+                    request = requestDAO.getRequestById(requestId);
+                }
                 return checkInsert
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new UserERROR("Only customer can request");
             }
-        } catch (TokenERROR | UserERROR e) {
+        } catch (TokenERROR | UserERROR | RequestERROR e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(e)
                     .build();
@@ -106,13 +109,16 @@ public class Request {
             String userId = tokenDao.getToken(tokenString).getUserId();
             if (userId.equalsIgnoreCase(request.getCustomerID())) {
                 boolean checkUpdate = requestDAO.updateRequest(request);
+                if (checkUpdate) {
+                    request = requestDAO.getRequestById(request.getRequestId());
+                }
                 return checkUpdate
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new TokenERROR("You do not have permission to update this request");
             }
-        } catch (TokenERROR e) {
+        } catch (TokenERROR | RequestERROR e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(e)
                     .build();
@@ -129,8 +135,11 @@ public class Request {
             RequestDTO request = requestDAO.getRequestById(requestId);
             if (userId.equalsIgnoreCase(request.getCustomerID())) {
                 boolean checkDelete = requestDAO.removeRequest(requestId);
+                if (checkDelete) {
+                    request = requestDAO.getRequestById(request.getRequestId());
+                }
                 return checkDelete
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new RequestERROR("You do not have permission to delete this request");
@@ -152,8 +161,11 @@ public class Request {
             RequestDTO request = requestDAO.getRequestById(requestId);
             if (userId.equalsIgnoreCase(request.getPublisherId())) {
                 boolean check = requestDAO.changeStatus(request, 0b0010);
+                if (check) {
+                    request = requestDAO.getRequestById(request.getRequestId());
+                }
                 return check
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new RequestERROR("You do not have permission to approve/reject this request");
@@ -175,8 +187,11 @@ public class Request {
             RequestDTO request = requestDAO.getRequestById(requestId);
             if (userId.equalsIgnoreCase(request.getPublisherId())) {
                 boolean check = requestDAO.changeStatus(request, 0b1000);
+                if (check) {
+                    request = requestDAO.getRequestById(request.getRequestId());
+                }
                 return check
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new RequestERROR("You do not have permission to seen/unseen this request");
@@ -198,8 +213,11 @@ public class Request {
             RequestDTO request = requestDAO.getRequestById(requestId);
             if (userId.equalsIgnoreCase(request.getPublisherId())) {
                 boolean check = requestDAO.changeStatus(request, 0b0100);
+                if (check) {
+                    request = requestDAO.getRequestById(request.getRequestId());
+                }
                 return check
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new RequestERROR("You do not have permission to response this request");
@@ -220,9 +238,15 @@ public class Request {
             String userId = tokenDao.getToken(tokenString).getUserId();
             RequestDTO request = requestDAO.getRequestById(requestId);
             if (userId.equalsIgnoreCase(request.getPublisherId())) {
+                if (request.isApproved() || request.isResponse()) {
+                    throw new RequestERROR("Resquest has been approved/responded. Cannot remove!");
+                }
                 boolean check = requestDAO.changeStatus(request, 0b0001);
+                if (check) {
+                    request = requestDAO.getRequestById(request.getRequestId());
+                }
                 return check
-                        ? Response.status(Response.Status.OK).build()
+                        ? Response.status(Response.Status.OK).entity(request).build()
                         : Response.status(Response.Status.NO_CONTENT).build();
             } else {
                 throw new RequestERROR("You do not have permission to remove this request");

@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +28,8 @@ public class RequestDAO {
             + "[request_time],[description],[status],[request_id] FROM [dbo].[Requests] "
             + "WHERE [request_id] = ?";
     private static final String ADD_REQUEST = "INSERT INTO [dbo].[Requests] "
-            + "([request_id],[customer_id],[publisher_id],[description],[status]) "
-            + "VALUES (?,?,?,?,?)";
+            + "([request_id],[customer_id],[publisher_id],[description],[status],[request_time]) "
+            + "VALUES (?,?,?,?,?,?)";
     private static final String UPDATE_REQUEST = "UPDATE [dbo].[Requests] "
             + "SET [description] = ?, [status] = ? WHERE request_id = ?";
     private static final String REMOVE_REQUEST = "DELETE FROM [dbo].[Requests] "
@@ -126,6 +127,7 @@ public class RequestDAO {
                 stm.setString(3, request.getPublisherId());
                 stm.setString(4, request.getDescription());
                 stm.setInt(5, 0);
+                stm.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
                 check = stm.executeUpdate() > 0;
             }
         } catch (SQLException e) {
