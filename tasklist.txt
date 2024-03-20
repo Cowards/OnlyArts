@@ -1,0 +1,8 @@
+>> Xong trong ngày 21/03/2024
+Add javadoc cho tất cả class có trong: src.main.com.cowards.onlyarts
+    - Thế Hiếu: 
+        + package > config
+        + package > core
+        + package > repositories
+    - Hoàng Đạt
+        +  
