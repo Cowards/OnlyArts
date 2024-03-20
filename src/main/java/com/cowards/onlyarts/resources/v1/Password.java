@@ -45,7 +45,7 @@ public class Password {
     }
 
     @POST
-    @Path("getresettoken")
+    @Path("askreset")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResetToken(String email) {
