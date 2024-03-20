@@ -115,13 +115,10 @@ public class Order {
             List<OrderDTO> orderDTOs = orderDao.getAll(userId);
             for (OrderDTO orderDTO : orderDTOs) {
                 String orderId = orderDTO.getOrderId();
-                List<OrderDetailDTO> orderDetailDTOs
-                        = orderDetailDao.getAll(orderId);
-                List<ArtworkDTO> artworkDTOs
-                        = new ArrayList<>();
+                List<OrderDetailDTO> orderDetailDTOs = orderDetailDao.getAll(orderId);
+                List<ArtworkDTO> artworkDTOs = new ArrayList<>();
                 for (OrderDetailDTO orderDetailDTO : orderDetailDTOs) {
-                    ArtworkDTO artworkDTO
-                            = artworkDao.getArtwork(orderDetailDTO.getArtworkId());
+                    ArtworkDTO artworkDTO = artworkDao.getArtwork(orderDetailDTO.getArtworkId());
                     artworkDTOs.add(artworkDTO);
                 }
 
@@ -155,12 +152,10 @@ public class Order {
             List<OrderDTO> orders = orderDao.getAllByOwnerId(userId);
             result.put("orders", orders);
             for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails
-                        = orderDetailDao.getAll(order.getOrderId());
+                List<OrderDetailDTO> orderDetails = orderDetailDao.getAll(order.getOrderId());
                 List<ArtworkDTO> artworks = new ArrayList<>();
                 for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork
-                            = artworkDao.getArtwork(orderDetail.getArtworkId());
+                    ArtworkDTO artwork = artworkDao.getArtwork(orderDetail.getArtworkId());
                     artworks.add(artwork);
                 }
                 result.put(order.getOrderId(), artworks);
@@ -180,12 +175,10 @@ public class Order {
             List<OrderDTO> orders = orderDao.getAll();
             result.put("orders", orders);
             for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails
-                        = orderDetailDao.getAll(order.getOrderId());
+                List<OrderDetailDTO> orderDetails = orderDetailDao.getAll(order.getOrderId());
                 List<ArtworkDTO> artworks = new ArrayList<>();
                 for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork
-                            = artworkDao.getArtwork(orderDetail.getArtworkId());
+                    ArtworkDTO artwork = artworkDao.getArtwork(orderDetail.getArtworkId());
                     artworks.add(artwork);
                 }
                 result.put(order.getOrderId(), artworks);
@@ -206,12 +199,10 @@ public class Order {
             List<OrderDTO> orders = orderDao.getTop10();
             result.put("orders", orders);
             for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails
-                        = orderDetailDao.getAll(order.getOrderId());
+                List<OrderDetailDTO> orderDetails = orderDetailDao.getAll(order.getOrderId());
                 List<ArtworkDTO> artworks = new ArrayList<>();
                 for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork
-                            = artworkDao.getArtwork(orderDetail.getArtworkId());
+                    ArtworkDTO artwork = artworkDao.getArtwork(orderDetail.getArtworkId());
                     artworks.add(artwork);
                 }
                 result.put(order.getOrderId(), artworks);

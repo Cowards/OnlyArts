@@ -4,7 +4,6 @@ import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.repositories.comment.CommentDTO;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
-import com.cowards.onlyarts.services.ArtworkDAO;
 import com.cowards.onlyarts.services.CommentDAO;
 import com.cowards.onlyarts.services.TokenDAO;
 import jakarta.ws.rs.Consumes;
@@ -23,7 +22,6 @@ public class Comment {
 
     private static final CommentDAO commentDao = CommentDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
-    private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
 
     @GET
     @Path("/{artwork_id}")
