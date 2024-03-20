@@ -32,10 +32,7 @@ public class Artwork {
 
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
-    private static final CommentDAO commentDao = CommentDAO.getInstance();
     private static final UserDAO userDao = UserDAO.getInstance();
-    private static final ReactionDAO reactionDao = ReactionDAO.getInstance();
-    private static final FavorDAO favorDao = FavorDAO.getInstance();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
