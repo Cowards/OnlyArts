@@ -54,7 +54,7 @@ public class Artwork {
     public Response get(@PathParam("artworkId") String artworkId) {
         try {
             ArtworkDTO artwork = artworkDao.getArtwork(artworkId);
-            return Response.status(200)
+            return Response.status(Response.Status.OK)
                     .entity(artwork)
                     .build();
         } catch (ArtworkERROR ex) {
@@ -106,98 +106,7 @@ public class Artwork {
         }
     }
 
-    @GET
-    @Path("/comment/{artwork_id}")
-    public Response viewComment(@PathParam("artwork_id") String artworkId) throws ArtworkERROR {
-        List<CommentDTO> comment = commentDao.getArtworkComment(artworkId);
-        if (!comment.isEmpty()) {
-            return Response.ok(comment, MediaType.APPLICATION_JSON).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-    }
-
-    @GET
-    @Path("/reaction/{artwork_id}")
-    public Response viewReactUser(@PathParam("artwork_id") String artworkId) throws ArtworkERROR {
-        List<UserDTO> userList = userDao.getUserReaction(artworkId);
-        if (!userList.isEmpty()) {
-            return Response
-                    .ok(userList, MediaType.APPLICATION_JSON).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-    }
-
     @POST
-    @Path("/comment")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response comment(@HeaderParam("authtoken") String tokenString,
-            CommentDTO comment) throws TokenERROR {
-        TokenDTO token = tokenDao.getToken(tokenString);
-        String userId = token.getUserId();
-        String commentId = CodeGenerator.generateUUID(20);
-        comment.setCommentId(commentId);
-        comment.setCommenterId(userId);
-        boolean checkAddNewComment = commentDao.addComment(comment);
-        if (checkAddNewComment) {
-            comment = commentDao.getComment(commentId);
-            return Response.ok(comment).build();
-        }
-        return Response
-                .status(Response.Status.INTERNAL_SERVER_ERROR).build();
-    }
-
-    @POST
-    @Path("/reaction")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addReaction(@HeaderParam("authtoken") String tokenString,
-            ReactionDTO reaction) {
-        try {
-            String userId = tokenDao.getToken(tokenString).getUserId();
-            String artworkId = reaction.getArtworkId();
-            boolean checkAddNewReaction = reactionDao.addReaction(userId, artworkId);
-            return checkAddNewReaction
-                    ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (TokenERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
-        }
-    }
-
-    @GET
-    @Path("/favorite/{user_id}")
-    public Response viewFavorite(@PathParam("user_id") String userId) {
-        List<ArtworkDTO> favoArtworks = favorDao.getFavoriteArtworks(userId);
-        if (!favoArtworks.isEmpty()) {
-            return Response.ok(favoArtworks, MediaType.APPLICATION_JSON).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-    }
-
-    @POST
-    @Path("/favorite")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addFavorite(@HeaderParam("authtoken") String tokenString,
-            ArtworkDTO artworkDTO) {
-        try {
-            String userId = tokenDao.getToken(tokenString).getUserId();
-            String artworkId = artworkDTO.getArtworkId();
-            boolean checkAddNewFavorite = favorDao.addFavorite(userId, artworkId);
-            return checkAddNewFavorite
-                    ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (TokenERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
-        }
-    }
-
-    @POST
-    @Path("/publish")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addArtwork(@HeaderParam("authtoken") String tokenString,
@@ -224,7 +133,6 @@ public class Artwork {
     }
 
     @PUT
-    @Path("/sell")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response sellArtwork(@HeaderParam("authtoken") String tokenString,
