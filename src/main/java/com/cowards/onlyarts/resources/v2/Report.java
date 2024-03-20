@@ -43,25 +43,28 @@ public class Report {
                     ? Response.status(Response.Status.NO_CONTENT).build()
                     : Response.status(Response.Status.NOT_FOUND).build();
         } catch (TokenERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
         }
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllReports(@HeaderParam("authtoken") String tokenString)
-            throws TokenERROR, UserERROR {
-        TokenDTO tokenDto = tokenDAO.getToken(tokenString);
-        UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
-        if (!userDTO.getRoleId().equals("AD")) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("You cannot access this page").build();
-        }
-        List<ReportDTO> listReport = reportDAO.getAllReports();
-        if (!listReport.isEmpty()) {
-            return Response.ok(listReport).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+    public Response getAllReports(@HeaderParam("authtoken") String tokenString) {
+        try {
+            TokenDTO tokenDto = tokenDAO.getToken(tokenString);
+            UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
+            if (!userDTO.getRoleId().equals("AD")) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            List<ReportDTO> listReport = reportDAO.getAllReports();
+            if (!listReport.isEmpty()) {
+                return Response.ok(listReport).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (TokenERROR | UserERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex).build();
         }
     }
 
@@ -80,7 +83,7 @@ public class Report {
         if (!listReport.isEmpty()) {
             return Response.ok(listReport).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -88,7 +91,7 @@ public class Report {
     @Path("/processing/{choice}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response processReport(@HeaderParam("authtoken") String tokenString, 
+    public Response processReport(@HeaderParam("authtoken") String tokenString,
             ReportDTO report, @PathParam("choice") String choice) throws ArtworkERROR {
         try {
             UserDTO currentUser = userDAO.getUserById(tokenDAO.getToken(tokenString).getUserId());

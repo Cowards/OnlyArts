@@ -33,7 +33,7 @@ public class Reaction {
             return Response
                     .ok(userList, MediaType.APPLICATION_JSON).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -49,7 +49,7 @@ public class Reaction {
             boolean checkAddNewReaction = reactionDao.addReaction(userId, artworkId);
             return checkAddNewReaction
                     ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                    : Response.status(Response.Status.NOT_ACCEPTABLE).build();
         } catch (TokenERROR ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
         }

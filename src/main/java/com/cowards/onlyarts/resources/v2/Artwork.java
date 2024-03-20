@@ -36,7 +36,7 @@ public class Artwork {
         if (!artworks.isEmpty()) {
             return Response.ok(artworks).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -60,13 +60,13 @@ public class Artwork {
     @Path("/type/{type_input}")
     public Response searchByType(@PathParam("type_input") String typeInput) {
         if (typeInput.isBlank()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
         List<ArtworkDTO> listArtwork = artworkDao.getListArtworkWithType(typeInput);
         if (!listArtwork.isEmpty()) {
             return Response.ok(listArtwork, MediaType.APPLICATION_JSON).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -74,7 +74,7 @@ public class Artwork {
     @Path("/title/{title_input}")
     public Response searchByName(@PathParam("title_input") String titleInput) {
         if (titleInput.isBlank()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
         List<ArtworkDTO> list = artworkDao.getListArtworkWithName(titleInput);
         if (!list.isEmpty()) {
@@ -88,13 +88,13 @@ public class Artwork {
     @Path("/creator/{creator_input}")
     public Response searchByNameOfCreator(@PathParam("creator_input") String creatorInput) {
         if (creatorInput.isBlank()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
         List<ArtworkDTO> list = artworkDao.getListArtworkWithNameOfCreator(creatorInput);
         if (!list.isEmpty()) {
             return Response.ok(list, MediaType.APPLICATION_JSON).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -117,7 +117,7 @@ public class Artwork {
                 return Response.ok(artwork).build();
             }
             return Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                    .status(Response.Status.NOT_ACCEPTABLE).build();
         } catch (TokenERROR | UserERROR ex) {
             return Response.status(401)
                     .entity(ex).build();
@@ -139,7 +139,7 @@ public class Artwork {
                 artwork = artworkDao.getArtwork(artwork.getArtworkId());
                 return Response.ok(artwork).build();
             }
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         } catch (TokenERROR | ArtworkERROR ex) {
             return Response.status(401)
                     .entity(ex).build();

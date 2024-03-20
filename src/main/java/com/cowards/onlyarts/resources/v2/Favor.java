@@ -28,7 +28,7 @@ public class Favor {
         if (!favoArtworks.isEmpty()) {
             return Response.ok(favoArtworks, MediaType.APPLICATION_JSON).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -43,9 +43,9 @@ public class Favor {
             boolean checkAddNewFavorite = favorDao.addFavorite(userId, artworkId);
             return checkAddNewFavorite
                     ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                    : Response.status(Response.Status.NOT_ACCEPTABLE).build();
         } catch (TokenERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
         }
     }
 
