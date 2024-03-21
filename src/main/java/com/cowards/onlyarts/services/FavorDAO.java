@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access methods for managing user favorites in the database.
+ */
 public class FavorDAO {
 
     private static final DBContext context = DBContext.getInstance();
@@ -38,6 +41,11 @@ public class FavorDAO {
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Gets the instance of FavorDAO.
+     *
+     * @return the instance of FavorDAO.
+     */
     public static FavorDAO getInstance() {
         if (instance == null) {
             instance = new FavorDAO();
@@ -45,6 +53,13 @@ public class FavorDAO {
         return instance;
     }
 
+    /**
+     * Removes a specific artwork from a user's favorites.
+     *
+     * @param userId    the ID of the user.
+     * @param artworkId the ID of the artwork to be removed from favorites.
+     * @return true if the artwork is successfully removed from favorites, false otherwise.
+     */
     public boolean removeFavorite(String userId, String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -64,7 +79,13 @@ public class FavorDAO {
         return res;
     }
 
-    //
+    /**
+     * Adds a specific artwork to a user's favorites.
+     *
+     * @param userId    the ID of the user.
+     * @param artworkId the ID of the artwork to be added to favorites.
+     * @return true if the artwork is successfully added to favorites, false otherwise.
+     */
     public boolean addFavorite(String userId, String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -83,8 +104,13 @@ public class FavorDAO {
         }
         return res;
     }
-    //
-
+    
+    /**
+     * Retrieves a list of favorite artworks for a specific user.
+     *
+     * @param userId the ID of the user.
+     * @return a list of ArtworkDTO objects representing the favorite artworks of the user.
+     */
     public List<ArtworkDTO> getFavoriteArtworks(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
