@@ -22,6 +22,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/*
+ * This class defines RESTful endpoints related to requests for artwork.
+ */
 @Path("v4/requests")
 public class Request {
 
@@ -29,6 +32,13 @@ public class Request {
     private final TokenDAO tokenDao = TokenDAO.getInstance();
     private final UserDAO userDAO = UserDAO.getInstance();
 
+    /**
+     * Retrieves all requests associated with the authenticated user.
+     *
+     * @param tokenString The authentication token of the user.
+     * @return Response containing the list of requests in JSON format if successful,
+     *         or an error response if the user is unauthorized or no requests are found.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllRequests(@HeaderParam("authtoken") String tokenString) {
@@ -48,6 +58,14 @@ public class Request {
         }
     }
 
+    /**
+     * Retrieves a specific request by its ID.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param requestId   The ID of the request to retrieve.
+     * @return Response containing the requested request in JSON format if successful,
+     *         or an error response if the request is not found or the user is unauthorized.
+     */
     @GET
     @Path("{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -70,7 +88,14 @@ public class Request {
                     .build();
         }
     }
-
+    
+     /**
+     * Creates a new request.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param request     The request details.
+     * @return Response indicating success or failure of the request creation.
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -100,6 +125,13 @@ public class Request {
         }
     }
 
+    /**
+     * Updates an existing request.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param request     The updated request details.
+     * @return Response indicating success or failure of the request update.
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -124,7 +156,14 @@ public class Request {
                     .build();
         }
     }
-
+    
+    /**
+     * Deletes a request.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param requestId   The ID of the request to delete.
+     * @return Response indicating success or failure of the request deletion.
+     */
     @DELETE
     @Path("{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -151,6 +190,13 @@ public class Request {
         }
     }
 
+    /**
+     * Approves a request.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param requestId   The ID of the request to approve.
+     * @return Response indicating success or failure of the request approval.
+     */
     @PUT
     @Path("approve/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -177,6 +223,13 @@ public class Request {
         }
     }
 
+    /**
+     * Marks a request as seen.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param requestId   The ID of the request to mark as seen.
+     * @return Response indicating success or failure of marking the request as seen.
+     */
     @PUT
     @Path("seen/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -203,6 +256,13 @@ public class Request {
         }
     }
 
+    /**
+     * Responds to a request.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param requestId   The ID of the request to respond to.
+     * @return Response indicating success or failure of responding to the request.
+     */
     @PUT
     @Path("response/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -229,6 +289,13 @@ public class Request {
         }
     }
 
+    /**
+     * Remove a request.
+     *
+     * @param tokenString The authentication token of the user.
+     * @param requestId   The ID of the request to mark as done.
+     * @return Response indicating success or failure of marking the request as done.
+     */
     @PUT
     @Path("remove/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
