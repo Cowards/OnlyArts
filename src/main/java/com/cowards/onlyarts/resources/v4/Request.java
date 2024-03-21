@@ -22,6 +22,14 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * Resource class for managing requests in the OnlyArts system. This class
+ * provides endpoints for retrieving, creating, updating, and deleting requests,
+ * as well as approving, rejecting, and handling request status updates.
+ *
+ * This class interacts with the RequestDAO, TokenDAO, and UserDAO to handle
+ * operations related to requests.
+ */
 @Path("v4/requests")
 public class Request {
 
@@ -29,6 +37,13 @@ public class Request {
     private final TokenDAO tokenDao = TokenDAO.getInstance();
     private final UserDAO userDAO = UserDAO.getInstance();
 
+    /**
+     * Endpoint for retrieving all requests. This method returns a list of all
+     * requests based on the authenticated user's role.
+     *
+     * @param tokenString The authentication token.
+     * @return Response containing the list of requests.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllRequests(@HeaderParam("authtoken") String tokenString) {
@@ -48,6 +63,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for retrieving a request by ID. This method returns the request
+     * details specified by the request ID.
+     *
+     * @param tokenString The authentication token.
+     * @param requestId The ID of the request to retrieve.
+     * @return Response containing the request details.
+     */
     @GET
     @Path("{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -71,6 +94,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for creating a new request. This method creates a new request
+     * based on the provided request data.
+     *
+     * @param tokenString The authentication token.
+     * @param request The request data to create.
+     * @return Response indicating success or failure of the operation.
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -100,6 +131,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for updating an existing request. This method updates the
+     * details of an existing request based on the provided request data.
+     *
+     * @param tokenString The authentication token.
+     * @param request The updated request data.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -125,6 +164,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for deleting a request. This method deletes the specified
+     * request.
+     *
+     * @param tokenString The authentication token.
+     * @param requestId The ID of the request to delete.
+     * @return Response indicating success or failure of the operation.
+     */
     @DELETE
     @Path("{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -151,6 +198,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for approving a request. This method approves the specified
+     * request.
+     *
+     * @param tokenString The authentication token.
+     * @param requestId The ID of the request to approve.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Path("approve/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -177,6 +232,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for marking a request as seen. This method marks the specified
+     * request as seen.
+     *
+     * @param tokenString The authentication token.
+     * @param requestId The ID of the request to mark as seen.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Path("seen/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -203,6 +266,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for responding to a request. This method responds to the
+     * specified request.
+     *
+     * @param tokenString The authentication token.
+     * @param requestId The ID of the request to respond to.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Path("response/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -229,6 +300,14 @@ public class Request {
         }
     }
 
+    /**
+     * Endpoint for removing a request. This method removes the specified
+     * request.
+     *
+     * @param tokenString The authentication token.
+     * @param requestId The ID of the request to remove.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Path("remove/{request_id}")
     @Produces(MediaType.APPLICATION_JSON)
