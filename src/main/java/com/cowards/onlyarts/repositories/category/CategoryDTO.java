@@ -11,8 +11,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- *
- * @author ngocn
+ * The {@code CategoryDTO} class represents a data transfer object (DTO) for
+ * managing category information. It contains fields for the category ID and
+ * category name.
  */
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +22,13 @@ import lombok.ToString;
 @ToString
 public class CategoryDTO {
 
+    /**
+     * The ID of the category.
+     */
     private String cateId;
+
+    /**
+     * The name of the category.
+     */
     private String cateName;
 }
