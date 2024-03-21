@@ -22,6 +22,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * This class represents the endpoints for managing artworks, including
+ * retrieval, searching, publishing, and selling.
+ */
 @Path("v2/artworks")
 public class Artwork {
 
@@ -29,6 +33,11 @@ public class Artwork {
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final UserDAO userDao = UserDAO.getInstance();
 
+    /**
+     * Endpoint for retrieving all artworks.
+     *
+     * @return Response containing a list of all artworks.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
@@ -40,6 +49,12 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for retrieving a specific artwork by its ID.
+     *
+     * @param artworkId The ID of the artwork to retrieve.
+     * @return Response containing the artwork information.
+     */
     @GET
     @Path("/{artworkId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +71,12 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for searching artworks by type.
+     *
+     * @param typeInput The type of artwork to search for.
+     * @return Response containing a list of artworks matching the type.
+     */
     @GET
     @Path("/type/{type_input}")
     public Response searchByType(@PathParam("type_input") String typeInput) {
@@ -70,6 +91,12 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for searching artworks by title.
+     *
+     * @param titleInput The title of the artwork to search for.
+     * @return Response containing a list of artworks matching the title.
+     */
     @GET
     @Path("/title/{title_input}")
     public Response searchByName(@PathParam("title_input") String titleInput) {
@@ -84,6 +111,13 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for searching artworks by creator.
+     *
+     * @param creatorInput The name of the creator to search for.
+     * @return Response containing a list of artworks created by the specified
+     * creator.
+     */
     @GET
     @Path("/creator/{creator_input}")
     public Response searchByNameOfCreator(@PathParam("creator_input") String creatorInput) {
@@ -98,6 +132,13 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for adding a new artwork.
+     *
+     * @param tokenString The authentication token.
+     * @param artwork The artwork information to add.
+     * @return Response indicating success or failure of the artwork addition.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -124,6 +165,13 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for selling an artwork.
+     *
+     * @param tokenString The authentication token.
+     * @param artwork The artwork information to sell.
+     * @return Response indicating success or failure of the artwork sale.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
