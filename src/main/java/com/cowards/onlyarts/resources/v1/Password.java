@@ -15,12 +15,25 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * This class represents the endpoints for password management, including
+ * changing and resetting passwords.
+ */
 @Path("v1/password")
 public class Password {
 
     private static final UserDAO userDao = UserDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for changing user password.
+     *
+     * @param tokenString The authentication token.
+     * @param oldPw The old password.
+     * @param user The user data including the new password.
+     * @return Response indicating success or failure of password change
+     * operation.
+     */
     @POST
     @Path("change")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -44,6 +57,12 @@ public class Password {
         }
     }
 
+    /**
+     * Endpoint for requesting a password reset token.
+     *
+     * @param email The email address of the user requesting the password reset.
+     * @return Response containing the reset token.
+     */
     @POST
     @Path("askreset")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -62,6 +81,14 @@ public class Password {
         }
     }
 
+    /**
+     * Endpoint for resetting user password using a reset token.
+     *
+     * @param resetToken The reset token.
+     * @param newPw The new password.
+     * @return Response indicating success or failure of password reset
+     * operation.
+     */
     @POST
     @Path("resetpassword/{resettoken}")
     @Consumes(MediaType.APPLICATION_JSON)
