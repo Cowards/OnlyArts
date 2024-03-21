@@ -16,12 +16,28 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * Resource class for managing user follows in the OnlyArts system. This class
+ * provides endpoints for following and unfollowing users, as well as retrieving
+ * lists of users being followed and users who follow a specified user.
+ *
+ * This class interacts with the FollowDAO and TokenDAO to handle operations
+ * related to user follows.
+ */
 @Path("v4/follow")
 public class Follow {
 
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final FollowDAO followDao = FollowDAO.getInstance();
 
+    /**
+     * Endpoint for following a user. This method adds a follow relationship
+     * between the authenticated user and the specified user.
+     *
+     * @param tokenString The authentication token.
+     * @param userId The ID of the user to follow.
+     * @return Response indicating success or failure of the operation.
+     */
     @POST
     @Path("{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -40,6 +56,14 @@ public class Follow {
         }
     }
 
+    /**
+     * Endpoint for unfollowing a user. This method removes the follow
+     * relationship between the authenticated user and the specified user.
+     *
+     * @param tokenString The authentication token.
+     * @param userId The ID of the user to unfollow.
+     * @return Response indicating success or failure of the operation.
+     */
     @DELETE
     @Path("{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -58,6 +82,13 @@ public class Follow {
         }
     }
 
+    /**
+     * Endpoint for retrieving the users followed by a specified user. This
+     * method returns a list of users followed by the specified user.
+     *
+     * @param userId The ID of the user to retrieve followed users for.
+     * @return Response containing the list of followed users.
+     */
     @GET
     @Path("following/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -68,6 +99,13 @@ public class Follow {
                 : Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    /**
+     * Endpoint for retrieving the users who follow a specified user. This
+     * method returns a list of users who follow the specified user.
+     *
+     * @param userId The ID of the user to retrieve followers for.
+     * @return Response containing the list of followers.
+     */
     @GET
     @Path("follower/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
