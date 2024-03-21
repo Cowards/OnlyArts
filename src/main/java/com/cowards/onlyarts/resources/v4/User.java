@@ -16,12 +16,21 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Resource class for handling user-related operations.
+ */
 @Path("v4/user")
 public class User {
 
     private final UserDAO userDao = UserDAO.getInstance();
     private final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Retrieves the profile of the authenticated user.
+     *
+     * @param tokenString The authentication token of the user.
+     * @return Response containing the user's profile details.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserProfile(@HeaderParam("authtoken") String tokenString) {
@@ -39,6 +48,12 @@ public class User {
         }
     }
 
+    /**
+     * Retrieves a user's profile by their ID.
+     *
+     * @param userId The ID of the user to retrieve.
+     * @return Response containing the user's profile details.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{user_id}")
@@ -55,6 +70,13 @@ public class User {
         }
     }
 
+    /**
+     * Updates the user's information.
+     *
+     * @param user The updated user information.
+     * @param tokenString The authentication token of the user.
+     * @return Response containing the updated user's information.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +103,14 @@ public class User {
         }
     }
 
+    /**
+     * Bans a user.
+     *
+     * @param tokenString The authentication token of the user performing the
+     * ban action.
+     * @param userId The ID of the user to be banned.
+     * @return Response indicating the success or failure of the ban operation.
+     */
     @PUT
     @Path("ban/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -115,6 +145,15 @@ public class User {
         }
     }
 
+    /**
+     * Unbans a user.
+     *
+     * @param tokenString The authentication token of the user performing the
+     * unban action.
+     * @param userId The ID of the user to be unbanned.
+     * @return Response indicating the success or failure of the unban
+     * operation.
+     */
     @PUT
     @Path("unban/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
