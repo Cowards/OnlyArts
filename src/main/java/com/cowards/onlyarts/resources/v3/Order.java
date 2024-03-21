@@ -26,8 +26,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -49,6 +47,11 @@ public class Order {
             @HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            if (tokenDTO.isExpired()) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new TokenERROR("Login timeout"))
+                        .build();
+            }
             String userId = tokenDTO.getUserId();
             List<CartDTO> cartDTOs = cartDao.getAll(userId);
             if (cartDTOs.isEmpty()) {
@@ -56,52 +59,52 @@ public class Order {
                         .build();
             }
             HashMap<String, Object> result = new HashMap();
+            List<ArtworkDTO> artworkDTOs = new ArrayList<>();
+            String orderId = CodeGenerator.generateUUID(20);
+            float totalPrice = 0;
+            for (CartDTO cartDTO : cartDTOs) {
+                String artworkId = cartDTO.getArtworkId();
+                ArtworkDTO artworkDTO = artworkDao.getArtwork(artworkId);
+                totalPrice += artworkDTO.getPrice();
+                artworkDTOs.add(artworkDTO);
+            }
+            result.put("artworks", artworkDTOs);
+            if (!cartDao.delete(userId)) {
+                return Response.status(Response.Status.NOT_ACCEPTABLE)
+                        .build();
+            }
 
-            orderDTO.setOrderId(CodeGenerator.generateUUID(20));
+            orderDTO.setTotalPrice(totalPrice);
+            orderDTO.setOrderId(orderId);
             orderDTO.setUserId(userId);
             orderDTO.setStatus(0);
             if (!orderDao.insert(orderDTO)) {
                 return Response.status(Response.Status.NOT_ACCEPTABLE)
                         .build();
             }
-
-            String orderId = orderDTO.getOrderId();
             orderDTO = orderDao.getOne(orderId);
-
             result.put("order", orderDTO);
+
             OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
             orderDetailDTO.setOrderId(orderId);
-            for (CartDTO cartDTO : cartDTOs) {
-                String artworkId = cartDTO.getArtworkId();
+            for (ArtworkDTO artworkDTO : artworkDTOs) {
+                String artworkId = artworkDTO.getArtworkId();
                 orderDetailDTO.setArtworkId(artworkId);
                 if (!orderDetailDao.insert(orderDetailDTO)) {
                     return Response.status(Response.Status.NOT_ACCEPTABLE)
                             .build();
                 }
-                ArtworkDTO artworkDTO = artworkDao.getArtwork(artworkId);
-                result.put(artworkId, artworkDTO);
-            }
-
-            if (!cartDao.delete(userId)) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
-                        .build();
             }
 
             return Response.ok(result).build();
-        } catch (ArtworkERROR e) {
+        } catch (OrderDetailERROR | TokenERROR | ArtworkERROR | OrderERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
-        } catch (OrderERROR | OrderDetailERROR ex) {
-            return Response.status(Response.Status.NOT_ACCEPTABLE)
-                    .entity(ex).build();
-        } catch (TokenERROR ex) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(ex).build();
         }
     }
 
     @GET
-    @Path("/status")
+    @Path("/ordered")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrders(@HeaderParam("authtoken") String tokenString) {
         try {
@@ -118,10 +121,13 @@ public class Order {
             List<OrderDTO> orderDTOs = orderDao.getAll(userId);
             for (OrderDTO orderDTO : orderDTOs) {
                 String orderId = orderDTO.getOrderId();
-                List<OrderDetailDTO> orderDetailDTOs = orderDetailDao.getAll(orderId);
-                List<ArtworkDTO> artworkDTOs = new ArrayList<>();
+                List<OrderDetailDTO> orderDetailDTOs
+                        = orderDetailDao.getAll(orderId);
+                List<ArtworkDTO> artworkDTOs
+                        = new ArrayList<>();
                 for (OrderDetailDTO orderDetailDTO : orderDetailDTOs) {
-                    ArtworkDTO artworkDTO = artworkDao.getArtwork(orderDetailDTO.getArtworkId());
+                    ArtworkDTO artworkDTO
+                            = artworkDao.getArtwork(orderDetailDTO.getArtworkId());
                     artworkDTOs.add(artworkDTO);
                 }
 
@@ -131,21 +137,17 @@ public class Order {
             result.put("orders", orderDTOs);
 
             return Response.ok(result).build();
-        } catch (ArtworkERROR e) {
+        } catch (TokenERROR | ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)
                     .build();
-        } catch (TokenERROR e) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(e).build();
         }
     }
 
     @GET
-    @Path("/owner")
+    @Path("/recieved")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString
-    ) {
+    public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
             String userId = tokenDTO.getUserId();
@@ -159,21 +161,19 @@ public class Order {
             List<OrderDTO> orders = orderDao.getAllByOwnerId(userId);
             result.put("orders", orders);
             for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails = orderDetailDao.getAll(order.getOrderId());
+                List<OrderDetailDTO> orderDetails
+                        = orderDetailDao.getAll(order.getOrderId());
                 List<ArtworkDTO> artworks = new ArrayList<>();
                 for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork = artworkDao.getArtwork(orderDetail.getArtworkId());
+                    ArtworkDTO artwork
+                            = artworkDao.getArtwork(orderDetail.getArtworkId());
                     artworks.add(artwork);
                 }
                 result.put(order.getOrderId(), artworks);
             }
             return Response.ok(result).build();
-        } catch (ArtworkERROR e) {
+        } catch (TokenERROR | ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e)
-                    .build();
-        } catch (TokenERROR e) {
-            return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(e).build();
         }
     }
@@ -186,10 +186,12 @@ public class Order {
             List<OrderDTO> orders = orderDao.getAll();
             result.put("orders", orders);
             for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails = orderDetailDao.getAll(order.getOrderId());
+                List<OrderDetailDTO> orderDetails
+                        = orderDetailDao.getAll(order.getOrderId());
                 List<ArtworkDTO> artworks = new ArrayList<>();
                 for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork = artworkDao.getArtwork(orderDetail.getArtworkId());
+                    ArtworkDTO artwork
+                            = artworkDao.getArtwork(orderDetail.getArtworkId());
                     artworks.add(artwork);
                 }
                 result.put(order.getOrderId(), artworks);
@@ -210,10 +212,12 @@ public class Order {
             List<OrderDTO> orders = orderDao.getTop10();
             result.put("orders", orders);
             for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails = orderDetailDao.getAll(order.getOrderId());
+                List<OrderDetailDTO> orderDetails
+                        = orderDetailDao.getAll(order.getOrderId());
                 List<ArtworkDTO> artworks = new ArrayList<>();
                 for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork = artworkDao.getArtwork(orderDetail.getArtworkId());
+                    ArtworkDTO artwork
+                            = artworkDao.getArtwork(orderDetail.getArtworkId());
                     artworks.add(artwork);
                 }
                 result.put(order.getOrderId(), artworks);

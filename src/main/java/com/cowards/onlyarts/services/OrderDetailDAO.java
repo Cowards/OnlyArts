@@ -42,15 +42,15 @@ public class OrderDetailDAO {
                 .log(Level.SEVERE, message, ex);
     }
 
-    public boolean insert(OrderDetailDTO orderDetailsDTO) throws OrderDetailERROR {
+    public boolean insert(OrderDetailDTO orderDetailDTO) throws OrderDetailERROR {
         Connection conn = null;
         boolean check = false;
         PreparedStatement stm = null;
         try {
             conn = context.getConnection();
             stm = conn.prepareStatement(INSERT);
-            stm.setString(1, orderDetailsDTO.getOrderId());
-            stm.setString(2, orderDetailsDTO.getArtworkId());
+            stm.setString(1, orderDetailDTO.getOrderId());
+            stm.setString(2, orderDetailDTO.getArtworkId());
             if (stm.executeUpdate() > 0) {
                 check = true;
             } else {

@@ -43,7 +43,7 @@ public class OrderDAO {
             + "FROM Orders "
             + "WHERE DATE(order_time) = ?";
     private static final String GET_ALL_BY_OWNER_ID
-            = "SELECT [order_id], [user_id], [status], "
+            = "SELECT tb1.[order_id], [user_id], tb1.[status], "
             + "[payment_method], [order_time], [total_price] "
             + "FROM Orders tb1 "
             + "INNER JOIN Order_details tb2 "
@@ -121,18 +121,18 @@ public class OrderDAO {
         return profit;
     }
 
-    public boolean insert(OrderDTO ordersDTO) throws OrderERROR {
+    public boolean insert(OrderDTO orderDTO) throws OrderERROR {
         Connection conn = null;
         boolean check = false;
         PreparedStatement stm = null;
         try {
             conn = DB.getConnection();
             stm = conn.prepareStatement(INSERT);
-            stm.setString(1, ordersDTO.getOrderId());
-            stm.setString(2, ordersDTO.getUserId());
-            stm.setInt(3, ordersDTO.getStatus());
-            stm.setString(4, ordersDTO.getPaymentMethod());
-            stm.setFloat(5, ordersDTO.getTotalPrice());
+            stm.setString(1, orderDTO.getOrderId());
+            stm.setString(2, orderDTO.getUserId());
+            stm.setInt(3, orderDTO.getStatus());
+            stm.setString(4, orderDTO.getPaymentMethod());
+            stm.setFloat(5, orderDTO.getTotalPrice());
             if (stm.executeUpdate() > 0) {
                 check = true;
             } else {

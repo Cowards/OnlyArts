@@ -43,47 +43,25 @@ public class Report {
                     ? Response.status(Response.Status.NO_CONTENT).build()
                     : Response.status(Response.Status.NOT_FOUND).build();
         } catch (TokenERROR ex) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
         }
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllReports(@HeaderParam("authtoken") String tokenString) {
-        try {
-            TokenDTO tokenDto = tokenDAO.getToken(tokenString);
-            UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
-            if (!userDTO.getRoleId().equals("AD")) {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-            List<ReportDTO> listReport = reportDAO.getAllReports();
-            if (!listReport.isEmpty()) {
-                return Response.ok(listReport).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        } catch (TokenERROR | UserERROR ex) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(ex).build();
-        }
-    }
-
-    @GET
-    @Path("/handlelist")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getReportHandleList(@HeaderParam("authtoken") String tokenString)
-            throws UserERROR, TokenERROR {
+    public Response getAllReports(@HeaderParam("authtoken") String tokenString)
+            throws TokenERROR, UserERROR {
         TokenDTO tokenDto = tokenDAO.getToken(tokenString);
         UserDTO userDTO = userDAO.getUserById(tokenDto.getUserId());
         if (!userDTO.getRoleId().equals("AD")) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("You cannot access this page").build();
         }
-        List<ReportDTO> listReport = reportDAO.getReportHandleList();
+        List<ReportDTO> listReport = reportDAO.getAllReports();
         if (!listReport.isEmpty()) {
             return Response.ok(listReport).build();
         } else {
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
@@ -129,7 +107,7 @@ public class Report {
                 throw new UserERROR("You do not have permission to do this action!");
             }
         } catch (TokenERROR | UserERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ex).build();
         }
     }
 }

@@ -142,7 +142,7 @@ public class ArtworkDAO {
         return artworks;
     }
 
-    public ArtworkDTO getArtwork(String artowrkId) throws ArtworkERROR {
+    public ArtworkDTO getArtwork(String artworkId) throws ArtworkERROR {
         Connection conn = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -150,7 +150,7 @@ public class ArtworkDAO {
         try {
             conn = context.getConnection();
             stm = conn.prepareStatement(GET_ARTWORK);
-            stm.setString(1, artowrkId);
+            stm.setString(1, artworkId);
             rs = stm.executeQuery();
             if (rs.next()) {
                 artwork = new ArtworkDTO();
