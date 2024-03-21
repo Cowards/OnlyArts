@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.cowards.onlyarts.services;
 
 import com.cowards.onlyarts.core.DBContext;
@@ -12,8 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Admin
+ * This class provides data access methods for managing notifications in the database.
+ * It allows sending responses to notifications for specific users.
  */
 public class NotificationDAO {
 
