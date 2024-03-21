@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing reactions to artworks in the database.
+ */
 public class ReactionDAO {
 
     private static final DBContext context = DBContext.getInstance();
@@ -23,14 +26,29 @@ public class ReactionDAO {
             + "FROM [dbo].[Artwork_reactions]"
             + "WHERE [artwork_id] = ?";
 
+    /**
+     * Private constructor to prevent direct instantiation of the ReactionDAO class.
+     */
     private ReactionDAO() {
     }
 
+    /**
+     * Logs an error message along with the exception stack trace.
+     *
+     * @param message The error message to be logged.
+     * @param ex The Throwable object representing the exception.
+     */
     private void logError(String message, Exception ex) {
         Logger.getLogger(ReactionDAO.class.getName())
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Retrieves an instance of the ReactionDAO class. If no instance
+     * exists, a new instance is created and returned.
+     *
+     * @return An instance of the ReactionDAO class.
+     */
     public static ReactionDAO getInstance() {
         if (instance == null) {
             instance = new ReactionDAO();
@@ -38,6 +56,13 @@ public class ReactionDAO {
         return instance;
     }
 
+    /**
+     * Adds a reaction to an artwork.
+     * 
+     * @param userId The ID of the user who reacted to the artwork.
+     * @param artworkId The ID of the artwork to which the reaction is added.
+     * @return True if the reaction was successfully added, otherwise false.
+     */
     public boolean addReaction(String userId, String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -57,6 +82,13 @@ public class ReactionDAO {
         return res;
     }
 
+    /**
+     * Removes a reaction from an artwork.
+     * 
+     * @param userId The ID of the user whose reaction is to be removed.
+     * @param artworkId The ID of the artwork from which the reaction is removed.
+     * @return True if the reaction was successfully removed, otherwise false.
+     */
     public boolean removeReaction(String userId, String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -76,6 +108,12 @@ public class ReactionDAO {
         return res;
     }
 
+    /**
+     * Counts the number of reactions for a specific artwork.
+     * 
+     * @param artworkId The ID of the artwork for which the reactions are counted.
+     * @return The number of reactions for the artwork.
+     */
     public int countReaction(String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
