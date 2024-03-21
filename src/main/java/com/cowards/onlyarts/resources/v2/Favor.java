@@ -15,12 +15,23 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * This class represents the endpoints for managing favorites, including viewing
+ * favorite artworks and adding artworks to favorites.
+ */
 @Path("v2/favorite")
 public class Favor {
 
     private static final FavorDAO favorDao = FavorDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for viewing favorite artworks of a specific user.
+     *
+     * @param userId The ID of the user whose favorite artworks to view.
+     * @return Response containing a list of favorite artworks for the specified
+     * user.
+     */
     @GET
     @Path("/{user_id}")
     public Response viewFavorite(@PathParam("user_id") String userId) {
@@ -32,6 +43,14 @@ public class Favor {
         }
     }
 
+    /**
+     * Endpoint for adding an artwork to favorites.
+     *
+     * @param tokenString The authentication token.
+     * @param artworkDTO The artwork data to add to favorites.
+     * @return Response indicating success or failure of adding artwork to
+     * favorites.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
