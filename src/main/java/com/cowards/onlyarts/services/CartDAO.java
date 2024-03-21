@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.cowards.onlyarts.services;
 
 import com.cowards.onlyarts.core.DBContext;
@@ -17,8 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author ngocn
+ * This class provides data access methods for interacting with user's cart data in the database.
+ * It allows retrieving, inserting, and deleting artworks from the user's cart.
  */
 public class CartDAO {
 
@@ -38,6 +34,11 @@ public class CartDAO {
     private CartDAO() {
     }
 
+    /**
+     * Gets the instance of CartDAO.
+     * 
+     * @return the instance of CartDAO.
+     */
     public static CartDAO getInstance() {
         if (instance == null) {
             instance = new CartDAO();
@@ -45,6 +46,12 @@ public class CartDAO {
         return instance;
     }
 
+    /**
+     * Retrieves all artworks in the cart for a specific user.
+     *
+     * @param userId the ID of the user.
+     * @return a list of CartDTO objects representing the artworks in the user's cart.
+     */
     public List<CartDTO> getAll(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -70,6 +77,12 @@ public class CartDAO {
         return list;
     }
 
+    /**
+     * Inserts an artwork into the user's cart.
+     *
+     * @param cartDTO the CartDTO object representing the artwork to be inserted into the cart.
+     * @return true if the artwork is successfully inserted into the cart, false otherwise.
+     */
     public boolean insert(CartDTO cartDTO) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -92,6 +105,12 @@ public class CartDAO {
         return check;
     }
 
+    /**
+     * Deletes an artwork from the user's cart.
+     *
+     * @param cartDTO the CartDTO object representing the artwork to be deleted from the cart.
+     * @return true if the artwork is successfully deleted from the cart, false otherwise.
+     */
     public boolean delete(CartDTO cartDTO) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -114,6 +133,12 @@ public class CartDAO {
         return check;
     }
 
+    /**
+     * Deletes all artworks from the cart for a specific user.
+     *
+     * @param userId the ID of the user whose cart needs to be cleared.
+     * @return true if all artworks are successfully deleted from the cart, false otherwise.
+     */
     public boolean delete(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
