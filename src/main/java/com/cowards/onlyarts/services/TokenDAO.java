@@ -12,6 +12,9 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing tokens.
+ */
 public class TokenDAO {
 
     private static TokenDAO instance = null;
@@ -24,6 +27,10 @@ public class TokenDAO {
             + "SET [status] = ? "
             + "WHERE [token] = ?";
 
+    /**
+     * Private constructor for the TokenDAO class. Prevents instantiation from
+     * outside the class.
+     */
     private TokenDAO() {
     }
 
@@ -32,6 +39,12 @@ public class TokenDAO {
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Gets the instance of TokenDAO using the singleton pattern. If the
+     * instance is null, a new instance is created.
+     *
+     * @return The instance of TokenDAO.
+     */
     public static TokenDAO getInstance() {
         if (instance == null) {
             instance = new TokenDAO();
@@ -39,6 +52,13 @@ public class TokenDAO {
         return instance;
     }
 
+    /**
+     * Retrieves a token by its token string.
+     *
+     * @param tokenString The token string to retrieve.
+     * @return The TokenDTO object representing the token.
+     * @throws TokenERROR if the token string is invalid or not found in the system.
+     */
     public TokenDTO getToken(String tokenString) throws TokenERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -100,6 +120,12 @@ public class TokenDAO {
         return tokenString;
     }
 
+    /**
+     * Adds a login token for the specified user.
+     *
+     * @param userId The user ID for which the token is generated.
+     * @return The generated token string.
+     */
     public String addLoginToken(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -125,6 +151,13 @@ public class TokenDAO {
         return tokenString;
     }
 
+    /**
+     * Deactivates a token in the system.
+     *
+     * @param tokenString The token string to deactivate.
+     * @return True if the token is deactivated successfully, otherwise false.
+     * @throws TokenERROR if the token string is invalid or not found in the system.
+     */
     public boolean deactivateToken(String tokenString)
             throws TokenERROR {
         Connection conn = null;
