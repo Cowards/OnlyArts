@@ -11,8 +11,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- *
- * @author Admin
+ * The {@code ReactionDTO} class represents a data transfer object (DTO) for
+ * managing reactions to artworks. It contains fields for the artwork ID and
+ * user ID.
  */
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +21,14 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ReactionDTO {
+
+    /**
+     * The ID of the artwork associated with the reaction.
+     */
     private String artworkId;
+
+    /**
+     * The ID of the user who reacted to the artwork.
+     */
     private String userId;
 }
