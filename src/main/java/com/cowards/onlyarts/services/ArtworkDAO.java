@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access methods for interacting with artwork data in the database.
+ */
 public class ArtworkDAO {
 
     private static final DBContext context = DBContext.getInstance();
@@ -76,7 +79,12 @@ public class ArtworkDAO {
         }
         return instance;
     }
-
+    
+    /**
+     * Retrieves all artworks from the database.
+     *
+     * @return a list of ArtworkDTO objects representing the artworks.
+     */
     public List<ArtworkDTO> getAll() {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -109,6 +117,12 @@ public class ArtworkDAO {
         return artworks;
     }
 
+    /**
+     * Retrieves artworks owned by a specific user.
+     *
+     * @param ownerId the ID of the owner.
+     * @return a list of ArtworkDTO objects representing the artworks owned by the user.
+     */
     public List<ArtworkDTO> getArtworkByOwner(String ownerId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -142,6 +156,13 @@ public class ArtworkDAO {
         return artworks;
     }
 
+    /**
+     * Retrieves an artwork by its ID.
+     *
+     * @param artworkId the ID of the artwork.
+     * @return the ArtworkDTO object representing the artwork.
+     * @throws ArtworkERROR if the artwork with the specified ID does not exist.
+     */
     public ArtworkDTO getArtwork(String artworkId) throws ArtworkERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -175,6 +196,12 @@ public class ArtworkDAO {
         return artwork;
     }
 
+    /**
+     * Adds a new artwork to the database.
+     *
+     * @param artwork the ArtworkDTO object representing the artwork to be added.
+     * @return true if the artwork is successfully added, false otherwise.
+     */
     public boolean addArtwork(ArtworkDTO artwork) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -197,6 +224,12 @@ public class ArtworkDAO {
         return check;
     }
 
+    /**
+     * Updates the price of an existing artwork in the database.
+     *
+     * @param artwork the ArtworkDTO object representing the artwork to be updated.
+     * @return true if the artwork price is successfully updated, false otherwise.
+     */
     public boolean updateArtworkPrice(ArtworkDTO artwork) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -216,6 +249,13 @@ public class ArtworkDAO {
         return res;
     }
 
+    /**
+     * Deletes an artwork from the database.
+     *
+     * @param artworkId the ID of the artwork to be deleted.
+     * @return true if the artwork is successfully deleted, false otherwise.
+     * @throws ArtworkERROR if the artwork with the specified ID does not exist.
+     */
     public boolean delete(String artworkId) throws ArtworkERROR {
         Connection conn = null;
         boolean check = false;
@@ -237,6 +277,13 @@ public class ArtworkDAO {
         return check;
     }
 
+    /**
+     * Updates the details of an existing artwork in the database.
+     *
+     * @param artworkDTO the ArtworkDTO object representing the updated details of the artwork.
+     * @return true if the artwork details are successfully updated, false otherwise.
+     * @throws ArtworkERROR if the artwork with the specified ID does not exist.
+     */
     public boolean update(ArtworkDTO artworkDTO) throws ArtworkERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -265,6 +312,12 @@ public class ArtworkDAO {
         return check;
     }
 
+    /**
+     * Retrieves a list of artworks filtered by category type.
+     *
+     * @param typeInput the category type to filter artworks by.
+     * @return a list of ArtworkDTO objects representing the filtered artworks.
+     */
     public List<ArtworkDTO> getListArtworkWithType(String typeInput) {
         List<ArtworkDTO> list = new ArrayList<>();
         Connection conn = null;
@@ -299,6 +352,12 @@ public class ArtworkDAO {
         return list;
     }
 
+    /**
+     * Retrieves a list of artworks filtered by artwork name.
+     *
+     * @param titleInput the artwork name to filter artworks by.
+     * @return a list of ArtworkDTO objects representing the filtered artworks.
+     */
     public List<ArtworkDTO> getListArtworkWithName(String titleInput) {
         List<ArtworkDTO> list = new ArrayList<>();
         Connection conn = null;
@@ -332,7 +391,13 @@ public class ArtworkDAO {
         }
         return list;
     }
-
+    
+    /**
+     * Retrieves a list of artworks filtered by creator name.
+     *
+     * @param creatorInput the creator name to filter artworks by.
+     * @return a list of ArtworkDTO objects representing the filtered artworks.
+     */
     public List<ArtworkDTO> getListArtworkWithNameOfCreator(String creatorInput) {
         List<ArtworkDTO> list = new ArrayList<>();
         Connection conn = null;
@@ -367,6 +432,11 @@ public class ArtworkDAO {
         return list;
     }
 
+    /**
+     * Retrieves the top 10 artworks from the database, ordered by release date.
+     *
+     * @return a list of ArtworkDTO objects representing the top 10 artworks.
+     */
     public List<ArtworkDTO> getTop10() {
         Connection conn = null;
         PreparedStatement stm = null;
