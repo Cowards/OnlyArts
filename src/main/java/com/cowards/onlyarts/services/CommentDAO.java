@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access methods for interacting with comments in the database.
+ */
 public class CommentDAO {
 
     private static final DBContext context = DBContext.getInstance();
@@ -36,6 +39,11 @@ public class CommentDAO {
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Gets the instance of CommentDAO.
+     *
+     * @return the instance of CommentDAO.
+     */
     public static CommentDAO getInstance() {
         if (instance == null) {
             instance = new CommentDAO();
@@ -43,6 +51,12 @@ public class CommentDAO {
         return instance;
     }
 
+    /**
+     * Retrieves comments for a specific artwork.
+     *
+     * @param artworkId the ID of the artwork.
+     * @return a list of CommentDTO objects representing the comments for the artwork.
+     */
     public List<CommentDTO> getArtworkComment(String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -72,6 +86,12 @@ public class CommentDAO {
         return comments;
     }
 
+    /**
+     * Retrieves a specific comment by its ID.
+     *
+     * @param commentId the ID of the comment.
+     * @return a CommentDTO object representing the retrieved comment.
+     */
     public CommentDTO getComment(String commentId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -98,6 +118,12 @@ public class CommentDAO {
         return comment;
     }
 
+    /**
+     * Adds a new comment to the database.
+     *
+     * @param comment the CommentDTO object representing the comment to be added.
+     * @return true if the comment is successfully added, false otherwise.
+     */
     public boolean addComment(CommentDTO comment) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -119,6 +145,12 @@ public class CommentDAO {
         return res;
     }
 
+    /**
+     * Removes a comment from the database.
+     *
+     * @param commentId the ID of the comment to be removed.
+     * @return true if the comment is successfully removed, false otherwise.
+     */
     public boolean removeComment(String commentId) {
         Connection conn = null;
         PreparedStatement stm = null;
