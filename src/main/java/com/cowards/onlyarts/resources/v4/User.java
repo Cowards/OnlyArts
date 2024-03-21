@@ -16,12 +16,24 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * The User class provides endpoints for managing user profiles and account
+ * status in the OnlyArts system. This class allows users to retrieve user
+ * profiles, update user information, ban/unban user accounts, etc.
+ */
 @Path("v4/user")
 public class User {
 
     private final UserDAO userDao = UserDAO.getInstance();
     private final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for retrieving the user profile. This method retrieves the
+     * profile of the user associated with the provided authentication token.
+     *
+     * @param tokenString The authentication token.
+     * @return Response containing the user profile.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserProfile(@HeaderParam("authtoken") String tokenString) {
@@ -39,6 +51,13 @@ public class User {
         }
     }
 
+    /**
+     * Endpoint for retrieving a user by ID. This method retrieves a user
+     * profile based on the provided user ID.
+     *
+     * @param userId The ID of the user to retrieve.
+     * @return Response containing the retrieved user profile.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{user_id}")
@@ -55,6 +74,15 @@ public class User {
         }
     }
 
+    /**
+     * Endpoint for updating user information. This method updates the
+     * information of the user associated with the provided authentication
+     * token.
+     *
+     * @param user The updated user information.
+     * @param tokenString The authentication token.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +109,14 @@ public class User {
         }
     }
 
+    /**
+     * Endpoint for banning a user account. This method bans the user account
+     * associated with the provided user ID.
+     *
+     * @param tokenString The authentication token.
+     * @param userId The ID of the user account to ban.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Path("ban/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -115,6 +151,14 @@ public class User {
         }
     }
 
+    /**
+     * Endpoint for unbanning a user account. This method unbans the user
+     * account associated with the provided user ID.
+     *
+     * @param tokenString The authentication token.
+     * @param userId The ID of the user account to unban.
+     * @return Response indicating success or failure of the operation.
+     */
     @PUT
     @Path("unban/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
