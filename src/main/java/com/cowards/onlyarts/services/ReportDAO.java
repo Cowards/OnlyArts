@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing reports on artworks.
+ */
 public class ReportDAO {
 
     private static ReportDAO instance;
