@@ -16,22 +16,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
-/*
- * This class defines RESTful endpoints related to user follow actions.
- */
 @Path("v4/follow")
 public class Follow {
 
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final FollowDAO followDao = FollowDAO.getInstance();
 
-    /**
-     * Endpoint for a user to follow another user.
-     *
-     * @param tokenString The authentication token of the user.
-     * @param userId The ID of the user to follow.
-     * @return Response indicating success or failure of the follow action.
-     */
     @POST
     @Path("{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,13 +40,6 @@ public class Follow {
         }
     }
 
-    /**
-     * Endpoint for a user to unfollow another user.
-     *
-     * @param tokenString The authentication token of the user.
-     * @param userId The ID of the user to unfollow.
-     * @return Response indicating success or failure of the unfollow action.
-     */
     @DELETE
     @Path("{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -74,14 +57,7 @@ public class Follow {
             return Response.status(401).entity(ex).build();
         }
     }
-    
-    /**
-     * Retrieves the list of users that the specified user is following.
-     *
-     * @param userId The ID of the user whose following list is to be retrieved.
-     * @return Response containing the list of users being followed if available,
-     *         or a NO_CONTENT response if the list is empty.
-     */
+
     @GET
     @Path("following/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -92,13 +68,6 @@ public class Follow {
                 : Response.status(Response.Status.NO_CONTENT).build();
     }
 
-    /**
-     * Retrieves the list of users who are following the specified user.
-     *
-     * @param userId The ID of the user whose followers are to be retrieved.
-     * @return Response containing the list of followers if available,
-     *         or a NO_CONTENT response if the list is empty.
-     */
     @GET
     @Path("follower/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
