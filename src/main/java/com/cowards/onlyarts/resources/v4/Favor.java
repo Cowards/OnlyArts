@@ -17,9 +17,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
-/*
- * This class defines endpoints related to favorited artworks.
- */
 @Path("v4/favor")
 public class Favor {
 
@@ -27,13 +24,6 @@ public class Favor {
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final UserDAO userDao = UserDAO.getInstance();
 
-    /**
-     * Retrieves the favorite artworks associated with the authenticated user.
-     *
-     * @param tokenString The authentication token of the user.
-     * @return Response containing the favorite artworks in JSON format if
-     * successful, or an error response if the token is invalid or expired.
-     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFavoriteArtworks(@HeaderParam("authtoken") String tokenString) {
@@ -46,14 +36,6 @@ public class Favor {
         }
     }
 
-    /**
-     * Retrieves the favorite artworks associated with the specified user.
-     *
-     * @param userId The ID of the user whose favorite artworks are to be
-     * retrieved.
-     * @return Response containing the favorite artworks in JSON format if
-     * successful, or an error response if the user ID is invalid or not found.
-     */
     @GET
     @Path("{userid}")
     @Produces(MediaType.APPLICATION_JSON)
