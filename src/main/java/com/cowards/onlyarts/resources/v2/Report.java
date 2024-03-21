@@ -22,6 +22,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * This class represents the endpoints for managing reports, including reporting
+ * artworks, retrieving all reports, and processing reports.
+ */
 @Path("v2/reports")
 public class Report {
 
@@ -31,6 +35,13 @@ public class Report {
     private final TokenDAO tokenDAO = TokenDAO.getInstance();
     private final UserDAO userDAO = UserDAO.getInstance();
 
+    /**
+     * Endpoint for reporting an artwork.
+     *
+     * @param tokenString The authentication token.
+     * @param report The report data.
+     * @return Response indicating success or failure of reporting the artwork.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,6 +58,15 @@ public class Report {
         }
     }
 
+    /**
+     * Endpoint for retrieving all reports.
+     *
+     * @param tokenString The authentication token.
+     * @return Response containing a list of all reports.
+     * @throws TokenERROR If there's an error with the authentication token.
+     * @throws UserERROR If the user does not have permission to access this
+     * endpoint.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllReports(@HeaderParam("authtoken") String tokenString)
@@ -65,6 +85,16 @@ public class Report {
         }
     }
 
+    /**
+     * Endpoint for processing a report.
+     *
+     * @param tokenString The authentication token.
+     * @param report The report data.
+     * @param choice The choice for processing the report (Accepted/Rejected).
+     * @return Response indicating success or failure of processing the report.
+     * @throws ArtworkERROR If there's an error with the artwork related to the
+     * report.
+     */
     @POST
     @Path("/processing/{choice}")
     @Consumes(MediaType.APPLICATION_JSON)
