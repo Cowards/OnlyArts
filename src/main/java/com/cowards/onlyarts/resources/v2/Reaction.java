@@ -18,6 +18,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * This class represents the endpoints for managing reactions, including viewing
+ * users who reacted to a specific artwork and adding reactions to artworks.
+ */
 @Path("v2/reactions")
 public class Reaction {
 
@@ -25,6 +29,14 @@ public class Reaction {
     private static final ReactionDAO reactionDao = ReactionDAO.getInstance();
     private static final UserDAO userDao = UserDAO.getInstance();
 
+    /**
+     * Endpoint for viewing users who reacted to a specific artwork.
+     *
+     * @param artworkId The ID of the artwork to view reactions for.
+     * @return Response containing a list of users who reacted to the specified
+     * artwork.
+     * @throws ArtworkERROR If there's an error retrieving the artwork.
+     */
     @GET
     @Path("/{artwork_id}")
     public Response viewReactUser(@PathParam("artwork_id") String artworkId) throws ArtworkERROR {
@@ -37,6 +49,13 @@ public class Reaction {
         }
     }
 
+    /**
+     * Endpoint for adding a reaction to an artwork.
+     *
+     * @param tokenString The authentication token.
+     * @param reaction The reaction data to add.
+     * @return Response indicating success or failure of adding the reaction.
+     */
     @POST
     @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
