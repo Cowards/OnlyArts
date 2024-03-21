@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing responses related to requests.
+ */
 public class ResponseDAO {
 
     private static ResponseDAO instance;
@@ -36,10 +39,20 @@ public class ResponseDAO {
             + "ON tb1.request_id = tb2.request_id "
             + "WHERE tb2.customer_id = ?";
 
+    /**
+     * Private constructor for the ResponseDAO class. Prevents instantiation from
+     * outside the class.
+     */
     private ResponseDAO() {
 
     }
 
+    /**
+     * Gets the instance of ResponseDAO using the singleton pattern. If the
+     * instance is null, a new instance is created.
+     *
+     * @return The instance of ResponseDAO.
+     */
     public static ResponseDAO getInstance() {
         if (instance == null) {
             instance = new ResponseDAO();
@@ -52,6 +65,12 @@ public class ResponseDAO {
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Adds a new response to the system.
+     *
+     * @param responseDTO The ResponseDTO object representing the response to add.
+     * @return True if the response is added successfully, otherwise false.
+     */
     public boolean addResponse(ResponseDTO responseDTO) {
         boolean check = false;
         Connection conn = null;
@@ -75,6 +94,13 @@ public class ResponseDAO {
         return check;
     }
 
+    /**
+     * Retrieves a response by its ID.
+     *
+     * @param responseId The ID of the response to retrieve.
+     * @return The ResponseDTO object representing the response.
+     * @throws ResponseERROR if the response ID does not exist in the system.
+     */
     public ResponseDTO getResponseById(String responseId) throws ResponseERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -105,6 +131,12 @@ public class ResponseDAO {
         return response;
     }
 
+    /**
+     * Retrieves all responses associated with a publisher based on their ID.
+     *
+     * @param userId The ID of the publisher.
+     * @return A list of ResponseDTO objects containing information about each response.
+     */
     public List<ResponseDTO> getAllResponseById(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -134,6 +166,13 @@ public class ResponseDAO {
         return responseList;
     }
 
+    /**
+     * Changes the status of a response in the system.
+     *
+     * @param response The ResponseDTO object representing the response.
+     * @param state The state to set for the response status.
+     * @return True if the status is changed successfully, otherwise false.
+     */
     public boolean changeStatus(ResponseDTO response, int state) {
         boolean check = false;
         Connection conn = null;
@@ -155,6 +194,12 @@ public class ResponseDAO {
 
     }
 
+    /**
+     * Retrieves all responses associated with a customer based on their ID.
+     *
+     * @param userId The ID of the customer.
+     * @return A list of ResponseDTO objects containing information about each response.
+     */
     public List<ResponseDTO> getAllResponseByCustomerId(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
