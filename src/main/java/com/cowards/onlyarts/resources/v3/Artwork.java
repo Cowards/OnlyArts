@@ -18,8 +18,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 /**
- *
- * @author Admin
+ * This class represents endpoints for managing artworks, including updating,
+ * deleting, and retrieving top 10 artworks.
  */
 @Path("/v3/artworks")
 public class Artwork {
@@ -27,6 +27,13 @@ public class Artwork {
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for updating an artwork.
+     *
+     * @param artworkDTO The updated artwork data.
+     * @param tokenString The authentication token.
+     * @return Response indicating success or failure of the update operation.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,6 +68,13 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for deleting an artwork.
+     *
+     * @param artworkDTO The artwork data to be deleted.
+     * @param tokenString The authentication token.
+     * @return Response indicating success or failure of the delete operation.
+     */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -100,6 +114,11 @@ public class Artwork {
         }
     }
 
+    /**
+     * Endpoint for retrieving the top 10 artworks.
+     *
+     * @return Response containing a list of top 10 artworks.
+     */
     @GET
     @Path("/top10")
     @Produces(MediaType.APPLICATION_JSON)
