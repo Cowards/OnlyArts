@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing user data.
+ */
 public class UserDAO {
 
     private static final DBContext context = DBContext.getInstance();
@@ -72,9 +75,19 @@ public class UserDAO {
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Private constructor for the UserDAO class. Prevents instantiation from
+     * outside the class.
+     */
     private UserDAO() {
     }
 
+    /**
+     * Gets the instance of UserDAO using the singleton pattern. If the instance
+     * is null, a new instance is created.
+     *
+     * @return The instance of UserDAO.
+     */
     public static UserDAO getInstance() {
         if (instance == null) {
             instance = new UserDAO();
@@ -82,6 +95,12 @@ public class UserDAO {
         return instance;
     }
 
+    /**
+     * Adds a new user to the system.
+     *
+     * @param user The user object to add.
+     * @return The user object with generated user ID.
+     */
     public UserDTO addNewUser(UserDTO user) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -111,6 +130,13 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email The email of the user to retrieve.
+     * @return The UserDTO object representing the user.
+     * @throws UserERROR if the user with the specified email does not exist.
+     */
     public UserDTO getUserByEmail(String email) throws UserERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -147,6 +173,13 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Retrieves a user by their user ID.
+     *
+     * @param userId The user ID of the user to retrieve.
+     * @return The UserDTO object representing the user.
+     * @throws UserERROR if the user with the specified user ID does not exist.
+     */
     public UserDTO getUserById(String userId) throws UserERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -184,6 +217,15 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Changes the status of a user.
+     *
+     * @param userId The user ID of the user whose status is to be changed.
+     * @param status The new status value.
+     * @param state The state of the status to be changed (e.g., activate or
+     * deactivate).
+     * @return True if the status is changed successfully, otherwise false.
+     */
     public boolean changeStatus(String userId, int status, int state) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -204,6 +246,13 @@ public class UserDAO {
         return res;
     }
 
+    /**
+     * Changes the password of a user.
+     *
+     * @param userId The user ID of the user whose password is to be changed.
+     * @param newPw The new password.
+     * @return True if the password is changed successfully, otherwise false.
+     */
     public boolean changePassword(String userId, String newPw) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -224,6 +273,13 @@ public class UserDAO {
         return res;
     }
 
+    /**
+     * Updates the information of a user.
+     *
+     * @param user The UserDTO object containing the updated information.
+     * @return True if the user information is updated successfully, otherwise
+     * false.
+     */
     public boolean updateUserInfo(UserDTO user) {
         boolean check = false;
         Connection conn = null;
@@ -250,6 +306,13 @@ public class UserDAO {
         return check;
     }
 
+    /**
+     * Retrieves the list of users who reacted to a specific artwork.
+     *
+     * @param artworkId The ID of the artwork.
+     * @return The list of UserDTO objects representing users who reacted to the
+     * artwork.
+     */
     public List<UserDTO> getUserReaction(String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -285,6 +348,11 @@ public class UserDAO {
         return list;
     }
 
+    /**
+     * Retrieves the list of all users in the system.
+     *
+     * @return The list of UserDTO objects representing all users in the system.
+     */
     public List<UserDTO> getAllUsers() {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -321,6 +389,13 @@ public class UserDAO {
         return userList;
     }
 
+    /**
+     * Retrieves the list of followers for a specific user.
+     *
+     * @param userId The ID of the user.
+     * @return The list of UserDTO objects representing the followers of the
+     * user.
+     */
     public List<UserDTO> getFollower(String userId) {
         List<UserDTO> followerList = new ArrayList<>();
         Connection conn = null;
@@ -357,6 +432,11 @@ public class UserDAO {
         return followerList;
     }
 
+    /**
+     * Retrieves the top 10 users based on their join date.
+     *
+     * @return The list of UserDTO objects representing the top 10 users.
+     */
     public List<UserDTO> getTop10() {
         List<UserDTO> list = new ArrayList<>();
         Connection conn = null;
