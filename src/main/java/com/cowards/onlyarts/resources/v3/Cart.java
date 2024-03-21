@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.cowards.onlyarts.resources.v3;
 
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
@@ -23,8 +19,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 /**
- *
- * @author Admin
+ * This class represents endpoints for managing the user's cart, including
+ * adding, removing, and retrieving cart items.
  */
 @Path("/v3/cart")
 public class Cart {
@@ -32,6 +28,12 @@ public class Cart {
     private static final CartDAO cartDao = CartDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for retrieving the user's cart items.
+     *
+     * @param tokenString The authentication token.
+     * @return Response containing a list of cart items.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@HeaderParam("authtoken") String tokeString) {
@@ -50,6 +52,13 @@ public class Cart {
         }
     }
 
+    /**
+     * Endpoint for adding an artwork to the user's cart.
+     *
+     * @param artworkDTO The artwork to be added to the cart.
+     * @param tokenString The authentication token.
+     * @return Response indicating success or failure of the add operation.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -84,6 +93,13 @@ public class Cart {
         }
     }
 
+    /**
+     * Endpoint for removing an artwork from the user's cart.
+     *
+     * @param artworkDTO The artwork to be removed from the cart.
+     * @param tokenString The authentication token.
+     * @return Response indicating success or failure of the remove operation.
+     */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public Response remove(ArtworkDTO artworkDTO,
