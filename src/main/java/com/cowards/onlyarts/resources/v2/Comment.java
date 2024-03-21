@@ -17,12 +17,22 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * This class represents the endpoints for managing comments, including posting
+ * comments to specific artworks and retrieving comments.
+ */
 @Path("v2/comments")
 public class Comment {
 
     private static final CommentDAO commentDao = CommentDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for viewing comments on a specific artwork.
+     *
+     * @param artworkId The ID of the artwork to view comments for.
+     * @return Response containing a list of comments for the specified artwork.
+     */
     @GET
     @Path("/{artwork_id}")
     public Response viewComment(@PathParam("artwork_id") String artworkId) {
@@ -36,6 +46,13 @@ public class Comment {
         }
     }
 
+    /**
+     * Endpoint for posting a comment to a specific artwork.
+     *
+     * @param tokenString The authentication token.
+     * @param comment The comment data to post.
+     * @return Response indicating success or failure of the comment posting.
+     */
     @POST
     @Path("/comment")
     @Consumes(MediaType.APPLICATION_JSON)
