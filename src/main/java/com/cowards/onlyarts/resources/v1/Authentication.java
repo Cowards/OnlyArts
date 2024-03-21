@@ -16,12 +16,22 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * This class represents the authentication endpoints for user login, logout,
+ * registration, and account information retrieval.
+ */
 @Path("v1/authentication")
 public class Authentication {
 
     private static final UserDAO userDao = UserDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
 
+    /**
+     * Endpoint for user login.
+     *
+     * @param user The user information for login.
+     * @return Response indicating success or failure of login attempt.
+     */
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -48,6 +58,12 @@ public class Authentication {
         }
     }
 
+    /**
+     * Endpoint for user logout.
+     *
+     * @param tokenString The authentication token for logout.
+     * @return Response indicating success or failure of logout attempt.
+     */
     @DELETE
     @Path("logout")
     @Produces(MediaType.APPLICATION_JSON)
@@ -70,6 +86,13 @@ public class Authentication {
         }
     }
 
+    /**
+     * Endpoint for retrieving user account information.
+     *
+     * @param tokenString The authentication token for retrieving account
+     * information.
+     * @return Response containing user account information.
+     */
     @GET
     @Path("account")
     @Produces(MediaType.APPLICATION_JSON)
@@ -101,6 +124,12 @@ public class Authentication {
         }
     }
 
+    /**
+     * Endpoint for user registration.
+     *
+     * @param user The user information for registration.
+     * @return Response indicating success or failure of registration attempt.
+     */
     @POST
     @Path("register")
     @Consumes(MediaType.APPLICATION_JSON)
