@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing orders in the database.
+ */
 public class OrderDAO {
 
     private static final String GET_ALL
@@ -59,6 +62,12 @@ public class OrderDAO {
     private OrderDAO() {
     }
 
+    /**
+     * Retrieves an instance of the OrderDAO class. If no instance
+     * exists, a new instance is created and returned.
+     *
+     * @return An instance of the OrderDAO class.
+     */
     public static OrderDAO getInstance() {
         if (instance == null) {
             instance = new OrderDAO();
@@ -70,6 +79,11 @@ public class OrderDAO {
         Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Retrieves all orders from the database.
+     * 
+     * @return A list of OrderDTO objects representing the orders.
+     */
     public List<OrderDTO> getAll() {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -98,6 +112,12 @@ public class OrderDAO {
         return list;
     }
 
+    /**
+     * Retrieves the profit earned in the current month.
+     * 
+     * @return The profit earned in the current month.
+     * @throws OrderERROR If an error occurs while retrieving the profit.
+     */
     public float currentMonthProfit() throws OrderERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -121,6 +141,13 @@ public class OrderDAO {
         return profit;
     }
 
+    /**
+     * Inserts a new order into the database.
+     * 
+     * @param orderDTO The OrderDTO object representing the order to be inserted.
+     * @return True if the order was successfully inserted, otherwise false.
+     * @throws OrderERROR If an error occurs while inserting the order.
+     */
     public boolean insert(OrderDTO orderDTO) throws OrderERROR {
         Connection conn = null;
         boolean check = false;
@@ -146,6 +173,13 @@ public class OrderDAO {
         return check;
     }
 
+    /**
+     * Retrieves a single order from the database based on the order ID.
+     * 
+     * @param orderId The ID of the order to retrieve.
+     * @return An OrderDTO object representing the retrieved order.
+     * @throws OrderERROR If the order with the specified ID does not exist.
+     */
     public OrderDTO getOne(String orderId) throws OrderERROR {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -176,6 +210,12 @@ public class OrderDAO {
         return ordersDTO;
     }
 
+    /**
+     * Retrieves all orders associated with a specific user.
+     * 
+     * @param userId The ID of the user whose orders are to be retrieved.
+     * @return A list of OrderDTO objects representing the user's orders.
+     */
     public List<OrderDTO> getAll(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -205,6 +245,12 @@ public class OrderDAO {
         return list;
     }
 
+    /**
+     * Retrieves all orders placed on a specific date.
+     * 
+     * @param orderTime The date for which orders are to be retrieved.
+     * @return A list of OrderDTO objects representing the orders placed on the specified date.
+     */
     public List<OrderDTO> getAll(Date orderTime) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -234,6 +280,12 @@ public class OrderDAO {
         return list;
     }
 
+    /**
+     * Retrieves all orders associated with a specific owner (user who owns the artworks).
+     * 
+     * @param userId The ID of the owner whose orders are to be retrieved.
+     * @return A list of OrderDTO objects representing the owner's orders.
+     */
     public List<OrderDTO> getAllByOwnerId(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -264,6 +316,11 @@ public class OrderDAO {
         return list;
     }
 
+    /**
+     * Retrieves the top 10 latest orders from the database.
+     * 
+     * @return A list of OrderDTO objects representing the top 10 latest orders.
+     */
     public List<OrderDTO> getTop10() {
         Connection conn = null;
         PreparedStatement stm = null;
