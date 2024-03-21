@@ -11,8 +11,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- *
- * @author Admin
+ * The {@code CartDTO} class represents a data transfer object (DTO) for managing items in a user's cart.
+ * It contains information about the user ID and the artwork ID.
  */
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +21,9 @@ import lombok.ToString;
 @ToString
 public class CartDTO {
 
+    /** The user ID associated with the cart item. */
     private String userId;
+    
+    /** The artwork ID associated with the cart item. */
     private String artworkId;
 }
