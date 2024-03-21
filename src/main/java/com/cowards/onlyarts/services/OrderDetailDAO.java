@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class provides data access operations for managing order details in the database.
+ */
 public class OrderDetailDAO {
 
     private static final String INSERT
@@ -27,9 +30,18 @@ public class OrderDetailDAO {
 
     private static OrderDetailDAO instance = null;
 
+    /**
+     * Private constructor to prevent direct instantiation of the OrderDetailDAO class.
+     */
     private OrderDetailDAO() {
     }
 
+    /**
+     * Retrieves an instance of the OrderDetailDAO class. If no instance
+     * exists, a new instance is created and returned.
+     *
+     * @return An instance of the OrderDetailDAO class.
+     */
     public static OrderDetailDAO getInstance() {
         if (instance == null) {
             instance = new OrderDetailDAO();
@@ -37,11 +49,24 @@ public class OrderDetailDAO {
         return instance;
     }
 
+    /**
+     * Logs an error message along with the exception stack trace.
+     *
+     * @param message The error message to be logged.
+     * @param ex The Throwable object representing the exception.
+     */
     private void logError(String message, Exception ex) {
         Logger.getLogger(OrderDetailDAO.class.getName())
                 .log(Level.SEVERE, message, ex);
     }
 
+    /**
+     * Inserts a new order detail into the database.
+     * 
+     * @param orderDetailDTO The OrderDetailDTO object representing the order detail to be inserted.
+     * @return True if the order detail was successfully inserted, otherwise false.
+     * @throws OrderDetailERROR If an error occurs while inserting the order detail.
+     */
     public boolean insert(OrderDetailDTO orderDetailDTO) throws OrderDetailERROR {
         Connection conn = null;
         boolean check = false;
@@ -64,6 +89,12 @@ public class OrderDetailDAO {
         return check;
     }
 
+    /**
+     * Retrieves all order details associated with a specific order.
+     * 
+     * @param orderId The ID of the order whose details are to be retrieved.
+     * @return A list of OrderDetailDTO objects representing the order details.
+     */
     public List<OrderDetailDTO> getAll(String orderId) {
         Connection conn = null;
         PreparedStatement stm = null;
