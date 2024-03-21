@@ -28,8 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
- * @author Admin
+ * Resource class for handling orders in the OnlyArts system. Provides endpoints
+ * for inserting orders, retrieving user's orders, retrieving orders for
+ * publishers, retrieving all orders, and retrieving the top 10 orders.
  */
 @Path("/v3/orders")
 public class Order {
@@ -40,6 +41,16 @@ public class Order {
     private static final CartDAO cartDao = CartDAO.getInstance();
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
 
+    /**
+     * Inserts a new order into the system. This method retrieves cart items
+     * associated with the user, calculates the total price, deletes the cart
+     * items, inserts the order into the database along with order details, and
+     * returns the order information.
+     *
+     * @param orderDTO The order information to be inserted.
+     * @param tokenString The authentication token.
+     * @return Response containing the inserted order information.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -103,6 +114,14 @@ public class Order {
         }
     }
 
+    /**
+     * Retrieves all orders placed by the user. This method returns a list of
+     * orders along with their associated artwork details.
+     *
+     * @param tokenString The authentication token.
+     * @return Response containing the user's orders and associated artwork
+     * details.
+     */
     @GET
     @Path("/ordered")
     @Produces(MediaType.APPLICATION_JSON)
@@ -144,6 +163,14 @@ public class Order {
         }
     }
 
+    /**
+     * Retrieves all orders received by the publisher (owner). This method
+     * returns a list of orders along with their associated artwork details.
+     *
+     * @param tokenString The authentication token.
+     * @return Response containing the publisher's orders and associated artwork
+     * details.
+     */
     @GET
     @Path("/recieved")
     @Produces(MediaType.APPLICATION_JSON)
@@ -178,6 +205,12 @@ public class Order {
         }
     }
 
+    /**
+     * Retrieves all orders in the system. This method returns a list of orders
+     * along with their associated artwork details.
+     *
+     * @return Response containing all orders and associated artwork details.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrders() {
@@ -203,6 +236,13 @@ public class Order {
         }
     }
 
+    /**
+     * Retrieves the top 10 orders based on some criteria. This method returns a
+     * list of orders along with their associated artwork details.
+     *
+     * @return Response containing the top 10 orders and associated artwork
+     * details.
+     */
     @GET
     @Path("/top10")
     @Produces(MediaType.APPLICATION_JSON)
