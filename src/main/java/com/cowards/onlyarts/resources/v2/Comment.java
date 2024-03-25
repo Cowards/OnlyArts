@@ -54,7 +54,6 @@ public class Comment {
      * @return Response indicating success or failure of the comment posting.
      */
     @POST
-    @Path("/comment")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response comment(@HeaderParam("authtoken") String tokenString,

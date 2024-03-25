@@ -42,14 +42,14 @@ public class Authentication {
             if (!user.getPassword().equals(loginUser.getPassword())) {
                 throw new UserERROR("Password does not match in the system");
             }
-            String tokenString = tokenDao.addLoginToken(loginUser.getUserId());
+            TokenDTO token = tokenDao.addLoginToken(loginUser.getUserId());
             if (!loginUser.isOnline()) {
                 userDao.changeStatus(loginUser.getUserId(),
                         loginUser.getStatus(),
                         0b001);
             }
             return Response.status(Response.Status.OK)
-                    .entity(tokenString)
+                    .entity(token)
                     .build();
         } catch (UserERROR ex) {
             return Response.status(Response.Status.NOT_ACCEPTABLE)
@@ -142,7 +142,7 @@ public class Authentication {
                     .build();
         } catch (UserERROR ex) {
             String userId = userDao.addNewUser(user).getUserId();
-            String authtoken = tokenDao.addLoginToken(userId);
+            TokenDTO authtoken = tokenDao.addLoginToken(userId);
             return Response.status(Response.Status.CREATED)
                     .entity(authtoken)
                     .build();

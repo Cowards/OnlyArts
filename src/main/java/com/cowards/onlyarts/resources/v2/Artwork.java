@@ -61,11 +61,14 @@ public class Artwork {
     public Response get(@PathParam("artworkId") String artworkId) {
         try {
             ArtworkDTO artwork = artworkDao.getArtwork(artworkId);
+            if (artwork.isRemoved() || artwork.isPremium()) {
+                throw new ArtworkERROR("Artwork is removed");
+            }
             return Response.status(Response.Status.OK)
                     .entity(artwork)
                     .build();
         } catch (ArtworkERROR ex) {
-            return Response.status(404)
+            return Response.status(422)
                     .entity(ex)
                     .build();
         }

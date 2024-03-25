@@ -31,5 +31,6 @@ public class ApplicationConfig extends ResourceConfig {
      */
     public ApplicationConfig() {
         packages("com.cowards.onlyarts.resources");
+        this.register(new CorsFilter());
     }
 }

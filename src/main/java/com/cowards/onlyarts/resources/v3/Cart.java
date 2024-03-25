@@ -72,7 +72,7 @@ public class Cart {
             }
 
             if (artworkDTO.isPrivate()
-                    || artworkDTO.isBanned()
+                    || artworkDTO.isPremium()
                     || artworkDTO.isRemoved()) {
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(new CartERROR("This artwork cannot be added to cart"))

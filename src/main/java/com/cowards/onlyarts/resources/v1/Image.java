@@ -1,5 +1,6 @@
 package com.cowards.onlyarts.resources.v1;
 
+import com.cowards.onlyarts.repositories.image.ImageDTO;
 import com.cowards.onlyarts.services.ImageDAO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -22,14 +23,15 @@ public class Image {
     /**
      * Endpoint for uploading an image.
      *
-     * @param imageData The image data as a string.
+     * @param image The image data as a string.
      * @return Response indicating success or failure of the upload operation.
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadImage(String imageData) {
-        imageData = imageData.replaceAll("\"", "");
+    public Response uploadImage(ImageDTO image) {
+        String imageData = image.getImageData();
+        System.out.println(imageData);
         String imageId = imageDao.addImage(imageData);
         return Response.status(Response.Status.OK)
                 .entity(imageId).build();

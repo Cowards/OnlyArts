@@ -4,8 +4,11 @@ import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
+import com.cowards.onlyarts.repositories.user.UserDTO;
+import com.cowards.onlyarts.repositories.user.UserERROR;
 import com.cowards.onlyarts.services.ArtworkDAO;
 import com.cowards.onlyarts.services.TokenDAO;
+import com.cowards.onlyarts.services.UserDAO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -16,6 +19,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represents endpoints for managing artworks, including updating,
@@ -26,6 +31,7 @@ public class Artwork {
 
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
+    private static final UserDAO userDao = UserDAO.getInstance();
 
     /**
      * Endpoint for updating an artwork.
@@ -82,14 +88,10 @@ public class Artwork {
             @HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            UserDTO user = userDao.getUserById(tokenDTO.getUserId());
 
-            if (tokenDTO.isExpired()) {
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(new TokenERROR("Login timeout"))
-                        .build();
-            }
-
-            if (!tokenDTO.getUserId().equals(artworkDTO.getOwnerId())) {
+            if (!user.getUserId().equals(artworkDTO.getOwnerId())
+                    || !"AD".equals(user.getRoleId())) {
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(new TokenERROR("You are not allow remove this artwork"))
                         .build();
@@ -110,6 +112,10 @@ public class Artwork {
         } catch (ArtworkERROR | TokenERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)
+                    .build();
+        } catch (UserERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex)
                     .build();
         }
     }

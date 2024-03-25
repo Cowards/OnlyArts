@@ -57,7 +57,8 @@ public class TokenDAO {
      *
      * @param tokenString The token string to retrieve.
      * @return The TokenDTO object representing the token.
-     * @throws TokenERROR if the token string is invalid or not found in the system.
+     * @throws TokenERROR if the token string is invalid or not found in the
+     * system.
      */
     public TokenDTO getToken(String tokenString) throws TokenERROR {
         Connection conn = null;
@@ -126,14 +127,14 @@ public class TokenDAO {
      * @param userId The user ID for which the token is generated.
      * @return The generated token string.
      */
-    public String addLoginToken(String userId) {
+    public TokenDTO addLoginToken(String userId) {
         Connection conn = null;
         PreparedStatement stm = null;
-        String tokenString = null;
+        TokenDTO token = null;
         try {
             conn = context.getConnection();
             stm = conn.prepareStatement(ADD_TOKEN);
-            tokenString = CodeGenerator.generateRandomToken(32);
+            String tokenString = CodeGenerator.generateRandomToken(32);
             Date validDate = new Date(System.currentTimeMillis());
             Date expiredDate = new Date(System.currentTimeMillis() + 2_592_000_000L);
             stm.setString(1, userId);
@@ -142,13 +143,13 @@ public class TokenDAO {
             stm.setDate(4, expiredDate);
             stm.setInt(5, 0b101);
             stm.executeUpdate();
-
+            token = new TokenDTO(userId, tokenString, validDate, expiredDate, 0b101);
             context.closeStatement(stm);
         } catch (SQLException ex) {
             Logger.getLogger(TokenDAO.class.getName()).log(Level.SEVERE,
                     "Exception founf on addResetPasswordToken method", ex);
         }
-        return tokenString;
+        return token;
     }
 
     /**
@@ -156,7 +157,8 @@ public class TokenDAO {
      *
      * @param tokenString The token string to deactivate.
      * @return True if the token is deactivated successfully, otherwise false.
-     * @throws TokenERROR if the token string is invalid or not found in the system.
+     * @throws TokenERROR if the token string is invalid or not found in the
+     * system.
      */
     public boolean deactivateToken(String tokenString)
             throws TokenERROR {
