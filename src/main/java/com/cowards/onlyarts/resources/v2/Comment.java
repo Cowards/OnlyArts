@@ -37,7 +37,6 @@ public class Comment {
     @Path("/{artwork_id}")
     public Response viewComment(@PathParam("artwork_id") String artworkId) {
         List<CommentDTO> comment = commentDao.getArtworkComment(artworkId);
-
         return Response.ok(comment, MediaType.APPLICATION_JSON)
                 .build();
 
@@ -68,7 +67,6 @@ public class Comment {
             }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .build();
-
         } catch (TokenERROR ex) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(ex).build();

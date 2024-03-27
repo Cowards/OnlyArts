@@ -1,5 +1,6 @@
 package com.cowards.onlyarts.resources.v4;
 
+import com.cowards.onlyarts.repositories.follow.FollowDTO;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
 import com.cowards.onlyarts.repositories.user.UserDTO;
@@ -47,7 +48,9 @@ public class Follow {
             TokenDTO token = tokenDao.getToken(tokenString);
             boolean check = followDao.addFollow(token.getUserId(), userId);
             if (check) {
-                return Response.status(200).build();
+                return Response.status(200)
+                        .entity(new FollowDTO(token.getUserId(), userId, true))
+                        .build();
             } else {
                 throw new TokenERROR("Cannot follow this user");
             }
@@ -73,7 +76,9 @@ public class Follow {
             TokenDTO token = tokenDao.getToken(tokenString);
             boolean check = followDao.unfollowUser(token.getUserId(), userId);
             if (check) {
-                return Response.status(200).build();
+                return Response.status(200)
+                        .entity(new FollowDTO(token.getUserId(), userId, false))
+                        .build();
             } else {
                 throw new TokenERROR("Cannot unfollow this user");
             }

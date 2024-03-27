@@ -1,6 +1,8 @@
 package com.cowards.onlyarts.resources.v2;
 
+import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
+import com.cowards.onlyarts.repositories.notification.NotificationDTO;
 import com.cowards.onlyarts.repositories.report.ReportDTO;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
@@ -20,6 +22,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -49,9 +52,13 @@ public class Report {
             ReportDTO report) {
         try {
             String userId = tokenDAO.getToken(tokenString).getUserId();
-            boolean checkSellArtwork = reportDAO.reportArtwork(userId, report);
+            String reportId = CodeGenerator.generateUUID(20);
+            report.setReportId(reportId);
+            report.setReporterId(userId);
+            boolean checkSellArtwork = reportDAO.reportArtwork(report);
             return checkSellArtwork
-                    ? Response.status(Response.Status.NO_CONTENT).build()
+                    ? Response.status(Response.Status.OK)
+                            .entity(reportDAO.getReport(reportId)).build()
                     : Response.status(Response.Status.NOT_FOUND).build();
         } catch (TokenERROR ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex).build();
@@ -78,11 +85,7 @@ public class Report {
                     .entity("You cannot access this page").build();
         }
         List<ReportDTO> listReport = reportDAO.getAllReports();
-        if (!listReport.isEmpty()) {
-            return Response.ok(listReport).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        return Response.ok(listReport).build();
     }
 
     /**
@@ -120,14 +123,16 @@ public class Report {
                                     "Warning: You are reported by someone, because of Copyright problem",
                                     0);
                             if (sendResponseForReporter && sendResponseForUser) {
-                                return Response.status(Response.Status.OK).build();
+                                return Response.status(Response.Status.OK)
+                                        .entity(report).build();
                             }
                         } else {
                             sendResponseForReporter = notificationDAO.sendResponse(report.getReporterId(),
                                     "Thank you for your report, we had comfirmed that wrong!",
                                     0);
                             if (sendResponseForReporter) {
-                                return Response.status(Response.Status.OK).build();
+                                return Response.status(Response.Status.OK)
+                                        .entity(report).build();
                             }
                         }
                     }
