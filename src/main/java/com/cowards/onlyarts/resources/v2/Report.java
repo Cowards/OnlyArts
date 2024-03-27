@@ -2,7 +2,6 @@ package com.cowards.onlyarts.resources.v2;
 
 import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
-import com.cowards.onlyarts.repositories.notification.NotificationDTO;
 import com.cowards.onlyarts.repositories.report.ReportDTO;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
@@ -22,7 +21,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.List;
 
 /**

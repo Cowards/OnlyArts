@@ -52,9 +52,7 @@ public class Request {
             String roleID = userDAO.getUserById(userId).getRoleId();
             if ("CT".equalsIgnoreCase(roleID) || "CR".equalsIgnoreCase(roleID)) {
                 List<RequestDTO> requestList = requestDAO.getAllRequest(userId, roleID);
-                return !requestList.isEmpty()
-                        ? Response.status(Response.Status.OK).entity(requestList).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                return Response.status(Response.Status.OK).entity(requestList).build();
             } else {
                 throw new UserERROR("You do not have permission");
             }
@@ -120,7 +118,8 @@ public class Request {
                 }
                 return checkInsert
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot create request").build();
             } else {
                 throw new UserERROR("Only customer can request");
             }
@@ -153,7 +152,8 @@ public class Request {
                 }
                 return checkUpdate
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot update this request").build();
             } else {
                 throw new TokenERROR("You do not have permission to update this request");
             }
@@ -187,7 +187,8 @@ public class Request {
                 }
                 return checkDelete
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot delete this request").build();
             } else {
                 throw new RequestERROR("You do not have permission to delete this request");
             }
@@ -221,7 +222,8 @@ public class Request {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot approve this request").build();
             } else {
                 throw new RequestERROR("You do not have permission to approve/reject this request");
             }
@@ -255,7 +257,8 @@ public class Request {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot seen/unseen this request").build();
             } else {
                 throw new RequestERROR("You do not have permission to seen/unseen this request");
             }
@@ -289,7 +292,8 @@ public class Request {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot reject this request").build();
             } else {
                 throw new RequestERROR("You do not have permission to response this request");
             }
@@ -326,7 +330,8 @@ public class Request {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(request).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot done this request").build();
             } else {
                 throw new RequestERROR("You do not have permission to remove this request");
             }

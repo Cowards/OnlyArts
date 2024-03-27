@@ -60,7 +60,8 @@ public class ResponseAPI {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(responseDTO).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot add response").build();
             } else {
                 throw new ResponseERROR("You can not response for this request");
             }
@@ -91,9 +92,7 @@ public class ResponseAPI {
             } else {
                 throw new ResponseERROR("You do not have permission to view response");
             }
-            return !responseList.isEmpty()
-                    ? Response.status(Response.Status.OK).entity(responseList).build()
-                    : Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.OK).entity(responseList).build();
         } catch (TokenERROR | UserERROR | ResponseERROR ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
         }
@@ -112,9 +111,7 @@ public class ResponseAPI {
     public Response getResponseById(@PathParam("responseId") String responseId) {
         try {
             ResponseDTO response = responseDAO.getResponseById(responseId);
-            return response != null
-                    ? Response.status(Response.Status.OK).entity(response).build()
-                    : Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.OK).entity(response).build();
         } catch (ResponseERROR ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
         }
@@ -144,7 +141,8 @@ public class ResponseAPI {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(response).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot delete this response").build();
             } else {
                 throw new ResponseERROR("You can not delete this response");
             }
@@ -177,7 +175,8 @@ public class ResponseAPI {
                 }
                 return check
                         ? Response.status(Response.Status.OK).entity(response).build()
-                        : Response.status(Response.Status.NO_CONTENT).build();
+                        : Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Cannot seen this response").build();
             } else {
                 throw new ResponseERROR("You can not seen this response");
             }
