@@ -44,9 +44,9 @@ public class UserDAO {
             + "[first_name] = ?,"
             + "[last_name] =? ,"
             + "[phone] = ?,"
-            + "[email] = ?,"
             + "[address] = ?,"
-            + "[bio] = ? "
+            + "[bio] = ? ,"
+            + "[avatar] = ? "
             + "WHERE [user_id] = ? ";
     private static final String GET_USER_REACTION
             = "SELECT tb2.[user_id]"
@@ -291,9 +291,9 @@ public class UserDAO {
                 stm.setString(1, user.getFirstName());
                 stm.setString(2, user.getLastName());
                 stm.setString(3, user.getPhone());
-                stm.setString(4, user.getEmail());
-                stm.setString(5, user.getAddress());
-                stm.setString(6, user.getBio());
+                stm.setString(4, user.getAddress());
+                stm.setString(5, user.getBio());
+                stm.setString(6, user.getAvatar());
                 stm.setString(7, user.getUserId());
                 check = stm.executeUpdate() > 0;
             }
