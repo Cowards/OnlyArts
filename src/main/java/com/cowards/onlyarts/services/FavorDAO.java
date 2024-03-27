@@ -12,7 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class provides data access methods for managing user favorites in the database.
+ * This class provides data access methods for managing user favorites in the
+ * database.
  */
 public class FavorDAO {
 
@@ -25,6 +26,9 @@ public class FavorDAO {
     //
     private static final String REMOVE_FAVORITE
             = "DELETE FROM [dbo].[Users_favor]"
+            + "WHERE [user_id] = ? AND [artwork_id] = ?";
+    private static final String CHECK_FAVOR
+            = "SELECT * FROM [dbo].[Users_favor]"
             + "WHERE [user_id] = ? AND [artwork_id] = ?";
     private static final String GET_FAVORITE_ARTWORKS
             = "SELECT [dbo].[Artworks].[artwork_id],[owner_id],[cate_id],[name],"
@@ -53,12 +57,34 @@ public class FavorDAO {
         return instance;
     }
 
+    public boolean checkFavorite(String userId, String artworkId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean res = false;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(CHECK_FAVOR);
+            stm.setString(1, userId);
+            stm.setString(2, artworkId);
+            rs = stm.executeQuery();
+            res = rs.next();
+        } catch (SQLException ex) {
+            logError("Exception found on addFavorite() method", ex);
+            res = false;
+        } finally {
+            context.closeStatement(stm);
+        }
+        return res;
+    }
+
     /**
      * Removes a specific artwork from a user's favorites.
      *
-     * @param userId    the ID of the user.
+     * @param userId the ID of the user.
      * @param artworkId the ID of the artwork to be removed from favorites.
-     * @return true if the artwork is successfully removed from favorites, false otherwise.
+     * @return true if the artwork is successfully removed from favorites, false
+     * otherwise.
      */
     public boolean removeFavorite(String userId, String artworkId) {
         Connection conn = null;
@@ -82,9 +108,10 @@ public class FavorDAO {
     /**
      * Adds a specific artwork to a user's favorites.
      *
-     * @param userId    the ID of the user.
+     * @param userId the ID of the user.
      * @param artworkId the ID of the artwork to be added to favorites.
-     * @return true if the artwork is successfully added to favorites, false otherwise.
+     * @return true if the artwork is successfully added to favorites, false
+     * otherwise.
      */
     public boolean addFavorite(String userId, String artworkId) {
         Connection conn = null;
@@ -104,12 +131,13 @@ public class FavorDAO {
         }
         return res;
     }
-    
+
     /**
      * Retrieves a list of favorite artworks for a specific user.
      *
      * @param userId the ID of the user.
-     * @return a list of ArtworkDTO objects representing the favorite artworks of the user.
+     * @return a list of ArtworkDTO objects representing the favorite artworks
+     * of the user.
      */
     public List<ArtworkDTO> getFavoriteArtworks(String userId) {
         Connection conn = null;

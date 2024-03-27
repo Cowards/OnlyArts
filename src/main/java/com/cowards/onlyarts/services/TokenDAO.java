@@ -26,6 +26,9 @@ public class TokenDAO {
     private static final String DEACTIVATE_TOKEN = "UPDATE [dbo].[Tokens] "
             + "SET [status] = ? "
             + "WHERE [token] = ?";
+    private static final String DELETE_TOKEN
+            = "DELETE FROM [dbo].[Tokens]"
+            + "WHERE [token] = ?";
 
     /**
      * Private constructor for the TokenDAO class. Prevents instantiation from
@@ -171,6 +174,23 @@ public class TokenDAO {
             int status = token.isValid() ? token.getStatus() ^ 1 : token.getStatus();
             stm.setInt(1, status);
             stm.setString(2, tokenString);
+            stm.executeUpdate();
+
+            context.closeStatement(stm);
+        } catch (SQLException ex) {
+            Logger.getLogger(TokenDAO.class.getName()).log(Level.SEVERE,
+                    "Exception found on deactivateToken method", ex);
+        }
+        return true;
+    }
+
+    public boolean removeToken(String tokenString) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(DELETE_TOKEN);
+            stm.setString(1, tokenString);
             stm.executeUpdate();
 
             context.closeStatement(stm);

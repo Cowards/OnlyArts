@@ -42,11 +42,18 @@ public class Authentication {
             if (!user.getPassword().equals(loginUser.getPassword())) {
                 throw new UserERROR("Password does not match in the system");
             }
+            if (user.isBanned()) {
+                throw new UserERROR("Your account has been banned");
+            }
+            if (user.isRemoved()) {
+                throw new UserERROR("Your account has been removed");
+            }
             TokenDTO token = tokenDao.addLoginToken(loginUser.getUserId());
             if (!loginUser.isOnline()) {
+                int status = loginUser.getStatus() ^ 0b001;
                 userDao.changeStatus(loginUser.getUserId(),
                         loginUser.getStatus(),
-                        0b001);
+                        status);
             }
             return Response.status(Response.Status.OK)
                     .entity(token)
@@ -70,14 +77,16 @@ public class Authentication {
     public Response logout(@HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO token = tokenDao.getToken(tokenString);
-            tokenDao.deactivateToken(tokenString);
+            tokenDao.removeToken(tokenString);
             UserDTO user = userDao.getUserById(token.getUserId());
             if (user.isOnline()) {
+                int status = user.getStatus() ^ 0b001;
                 userDao.changeStatus(user.getUserId(),
                         user.getStatus(),
-                        0b001);
+                        status);
             }
-            return Response.status(Response.Status.NO_CONTENT)
+            return Response.status(Response.Status.OK)
+                    .entity(token)
                     .build();
         } catch (TokenERROR | UserERROR ex) {
             return Response.status(Response.Status.UNAUTHORIZED)

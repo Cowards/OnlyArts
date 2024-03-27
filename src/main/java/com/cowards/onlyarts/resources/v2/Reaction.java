@@ -2,15 +2,18 @@ package com.cowards.onlyarts.resources.v2;
 
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
 import com.cowards.onlyarts.repositories.reaction.ReactionDTO;
+import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
 import com.cowards.onlyarts.repositories.user.UserDTO;
 import com.cowards.onlyarts.services.ReactionDAO;
 import com.cowards.onlyarts.services.TokenDAO;
 import com.cowards.onlyarts.services.UserDAO;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -29,6 +32,38 @@ public class Reaction {
     private static final ReactionDAO reactionDao = ReactionDAO.getInstance();
     private static final UserDAO userDao = UserDAO.getInstance();
 
+    @PUT
+    @Path("/{artwork_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkReact(@PathParam("artwork_id") String artworkId,
+            @HeaderParam("authtoken") String tokenString) throws ArtworkERROR {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            boolean check = reactionDao.checkReaction(token.getUserId(), artworkId);
+            ReactionDTO react = new ReactionDTO(artworkId, token.getUserId(), check);
+            return Response.ok(react).build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex).build();
+        }
+    }
+
+    @DELETE
+    @Path("/{artwork_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removeReact(@PathParam("artwork_id") String artworkId,
+            @HeaderParam("authtoken") String tokenString) throws ArtworkERROR {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            boolean check = reactionDao.removeReaction(token.getUserId(), artworkId);
+            ReactionDTO react = new ReactionDTO(artworkId, token.getUserId(), check);
+            return Response.ok(react).build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex).build();
+        }
+    }
+
     /**
      * Endpoint for viewing users who reacted to a specific artwork.
      *
@@ -41,12 +76,10 @@ public class Reaction {
     @Path("/{artwork_id}")
     public Response viewReactUser(@PathParam("artwork_id") String artworkId) throws ArtworkERROR {
         List<UserDTO> userList = userDao.getUserReaction(artworkId);
-        if (!userList.isEmpty()) {
-            return Response
-                    .ok(userList, MediaType.APPLICATION_JSON).build();
-        } else {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        }
+
+        return Response
+                .ok(userList, MediaType.APPLICATION_JSON).build();
+
     }
 
     /**
@@ -57,7 +90,6 @@ public class Reaction {
      * @return Response indicating success or failure of adding the reaction.
      */
     @POST
-    @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addReaction(@HeaderParam("authtoken") String tokenString,
@@ -67,7 +99,9 @@ public class Reaction {
             String artworkId = reaction.getArtworkId();
             boolean checkAddNewReaction = reactionDao.addReaction(userId, artworkId);
             return checkAddNewReaction
-                    ? Response.status(Response.Status.NO_CONTENT).build()
+                    ? Response.status(Response.Status.OK)
+                            .entity(new ReactionDTO(artworkId, userId, checkAddNewReaction))
+                            .build()
                     : Response.status(Response.Status.NOT_ACCEPTABLE).build();
         } catch (TokenERROR ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex).build();

@@ -20,6 +20,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +50,20 @@ public class Artwork {
         }
     }
 
+    @GET
+    @Path("/offset/{offset}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllOffset(@PathParam("offset") int offset) {
+        List<ArtworkDTO> artworks = artworkDao.getAll();
+        int i = (offset - 1) * 28 + 1;
+        int j = offset * 28;
+        List< ArtworkDTO> _artworks = new ArrayList<>();
+        for (int k = i; k <= j && k < artworks.size(); k++) {
+            _artworks.add(artworks.get(k));
+        }
+        return Response.ok(_artworks).build();
+    }
+
     /**
      * Endpoint for retrieving a specific artwork by its ID.
      *
@@ -58,10 +73,11 @@ public class Artwork {
     @GET
     @Path("/{artworkId}")
     @Produces(MediaType.APPLICATION_JSON)
+
     public Response get(@PathParam("artworkId") String artworkId) {
         try {
             ArtworkDTO artwork = artworkDao.getArtwork(artworkId);
-            if (artwork.isRemoved() || artwork.isPremium()) {
+            if (artwork.isRemoved() || artwork.isBanned()) {
                 throw new ArtworkERROR("Artwork is removed");
             }
             return Response.status(Response.Status.OK)

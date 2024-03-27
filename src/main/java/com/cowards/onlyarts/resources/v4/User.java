@@ -7,6 +7,7 @@ import com.cowards.onlyarts.repositories.user.UserERROR;
 import com.cowards.onlyarts.services.TokenDAO;
 import com.cowards.onlyarts.services.UserDAO;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.PUT;
@@ -41,11 +42,21 @@ public class User {
             UserDTO user = null;
             TokenDTO token = tokenDao.getToken(tokenString);
             user = userDao.getUserById(token.getUserId());
+            if (user.isBanned()) {
+                throw new UserERROR("Your account has been banned");
+            }
+            if (user.isRemoved()) {
+                throw new UserERROR("Your account has been removed");
+            }
             return Response.status(Response.Status.OK)
                     .entity(user)
                     .build();
-        } catch (UserERROR | TokenERROR ex) {
+        } catch (UserERROR ex) {
             return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex)
+                    .build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(ex)
                     .build();
         }
@@ -193,4 +204,40 @@ public class User {
         }
     }
 
+    @DELETE
+    @Path("remove/{userid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removeUser(@HeaderParam("authtoken") String tokenString,
+            @PathParam("userid") String userId) {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            UserDTO loginUser = userDao.getUserById(token.getUserId());
+            if (!"AD".equals(loginUser.getRoleId())
+                    || loginUser.getUserId().equals(userId)) {
+                throw new TokenERROR("You dont have permission to do this action");
+            } else {
+                UserDTO user = userDao.getUserById(userId);
+                if (user.isRemoved()) {
+                    throw new UserERROR("This user already has been removed");
+                } else {
+                    boolean check = userDao.changeStatus(user.getUserId(),
+                            user.getStatus(), 0b010);
+                    if (check) {
+                        user = userDao.getUserById(userId);
+                        return Response.ok(user).build();
+                    } else {
+                        throw new UserERROR("Cannot remove this user");
+                    }
+                }
+            }
+        } catch (TokenERROR ex) {
+            return ex.getMessage().contains("permission")
+                    ? Response.status(Response.Status.FORBIDDEN).entity(ex).build()
+                    : Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
+        } catch (UserERROR ex) {
+            return ex.getMessage().contains("exist")
+                    ? Response.status(Response.Status.NOT_FOUND).entity(ex).build()
+                    : Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex).build();
+        }
+    }
 }

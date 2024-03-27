@@ -15,12 +15,11 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class represents endpoints for managing artworks, including updating,
@@ -135,6 +134,44 @@ public class Artwork {
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
+        }
+    }
+
+    @PUT
+    @Path("/ban/{artworkId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response ban(@HeaderParam("authtoken") String tokenString,
+            @PathParam("artworkId") String artworkId) {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            UserDTO loginUser = userDao.getUserById(token.getUserId());
+            if (!"AD".equals(loginUser.getRoleId())) {
+                throw new TokenERROR("You dont have permission to do this action");
+            } else {
+                ArtworkDTO artwork = artworkDao.getArtwork(artworkId);
+                if (artwork.isBanned()) {
+                    throw new ArtworkERROR("This artwork already has been banned");
+                } else {
+                    boolean check = artworkDao.changeStatus(artworkId,
+                            artwork.getStatus(), 0b010);
+                    if (check) {
+                        artwork = artworkDao.getArtwork(artworkId);
+                        return Response.ok(artwork).build();
+                    } else {
+                        throw new ArtworkERROR("Cannot remove this artwork");
+                    }
+                }
+            }
+        } catch (TokenERROR ex) {
+            return ex.getMessage().contains("permission")
+                    ? Response.status(Response.Status.FORBIDDEN).entity(ex).build()
+                    : Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
+        } catch (UserERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();
+        } catch (ArtworkERROR ex) {
+            return ex.getMessage().contains("exist")
+                    ? Response.status(Response.Status.NOT_FOUND).entity(ex).build()
+                    : Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex).build();
         }
     }
 }

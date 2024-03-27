@@ -79,7 +79,7 @@ public class ArtworkDTO implements Serializable {
      *
      * @return {@code true} if the artwork is banned, {@code false} otherwise.
      */
-    public boolean isPremium() {
+    public boolean isBanned() {
         return ((status >> 1) & 1) == 1;
     }
 

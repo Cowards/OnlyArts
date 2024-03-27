@@ -31,4 +31,6 @@ public class ReactionDTO {
      * The ID of the user who reacted to the artwork.
      */
     private String userId;
+
+    private boolean react;
 }

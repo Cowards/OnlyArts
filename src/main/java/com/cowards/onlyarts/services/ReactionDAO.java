@@ -9,7 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class provides data access operations for managing reactions to artworks in the database.
+ * This class provides data access operations for managing reactions to artworks
+ * in the database.
  */
 public class ReactionDAO {
 
@@ -25,9 +26,14 @@ public class ReactionDAO {
             = "SELECT count([user_id]) as [count] "
             + "FROM [dbo].[Artwork_reactions]"
             + "WHERE [artwork_id] = ?";
+    private static final String CHECK_REACTION
+            = "SELECT [user_id],[artwork_id]"
+            + "FROM [dbo].[Artwork_reactions]"
+            + "WHERE [artwork_id] = ? AND [user_id] = ?";
 
     /**
-     * Private constructor to prevent direct instantiation of the ReactionDAO class.
+     * Private constructor to prevent direct instantiation of the ReactionDAO
+     * class.
      */
     private ReactionDAO() {
     }
@@ -44,8 +50,8 @@ public class ReactionDAO {
     }
 
     /**
-     * Retrieves an instance of the ReactionDAO class. If no instance
-     * exists, a new instance is created and returned.
+     * Retrieves an instance of the ReactionDAO class. If no instance exists, a
+     * new instance is created and returned.
      *
      * @return An instance of the ReactionDAO class.
      */
@@ -56,9 +62,30 @@ public class ReactionDAO {
         return instance;
     }
 
+    public boolean checkReaction(String userId, String artworkId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean res = false;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(CHECK_REACTION);
+            stm.setString(1, artworkId);
+            stm.setString(2, userId);
+            rs = stm.executeQuery();
+            res = rs.next();
+        } catch (SQLException ex) {
+            logError("Exception found on addReaction() method", ex);
+            res = false;
+        } finally {
+            context.closeStatement(stm);
+        }
+        return res;
+    }
+
     /**
      * Adds a reaction to an artwork.
-     * 
+     *
      * @param userId The ID of the user who reacted to the artwork.
      * @param artworkId The ID of the artwork to which the reaction is added.
      * @return True if the reaction was successfully added, otherwise false.
@@ -84,9 +111,10 @@ public class ReactionDAO {
 
     /**
      * Removes a reaction from an artwork.
-     * 
+     *
      * @param userId The ID of the user whose reaction is to be removed.
-     * @param artworkId The ID of the artwork from which the reaction is removed.
+     * @param artworkId The ID of the artwork from which the reaction is
+     * removed.
      * @return True if the reaction was successfully removed, otherwise false.
      */
     public boolean removeReaction(String userId, String artworkId) {
@@ -110,8 +138,9 @@ public class ReactionDAO {
 
     /**
      * Counts the number of reactions for a specific artwork.
-     * 
-     * @param artworkId The ID of the artwork for which the reactions are counted.
+     *
+     * @param artworkId The ID of the artwork for which the reactions are
+     * counted.
      * @return The number of reactions for the artwork.
      */
     public int countReaction(String artworkId) {

@@ -37,13 +37,10 @@ public class Comment {
     @Path("/{artwork_id}")
     public Response viewComment(@PathParam("artwork_id") String artworkId) {
         List<CommentDTO> comment = commentDao.getArtworkComment(artworkId);
-        if (!comment.isEmpty()) {
-            return Response.ok(comment, MediaType.APPLICATION_JSON)
-                    .build();
-        } else {
-            return Response.status(Response.Status.NO_CONTENT)
-                    .build();
-        }
+
+        return Response.ok(comment, MediaType.APPLICATION_JSON)
+                .build();
+
     }
 
     /**

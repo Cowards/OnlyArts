@@ -31,10 +31,10 @@ public class Image {
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadImage(ImageDTO image) {
         String imageData = image.getImageData();
-        System.out.println(imageData);
         String imageId = imageDao.addImage(imageData);
+        image.setImageID(imageId);
         return Response.status(Response.Status.OK)
-                .entity(imageId).build();
+                .entity(image).build();
     }
 
     /**
@@ -48,8 +48,9 @@ public class Image {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getImage(@PathParam("imageId") String imageId) {
         String imageData = imageDao.getImage(imageId);
+        ImageDTO image = new ImageDTO(imageId, imageData);
         return Response.status(Response.Status.OK)
-                .entity(imageData).build();
+                .entity(image).build();
     }
 
 }

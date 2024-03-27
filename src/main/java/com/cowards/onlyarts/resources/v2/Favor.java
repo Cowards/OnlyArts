@@ -1,13 +1,18 @@
 package com.cowards.onlyarts.resources.v2;
 
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
+import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
+import com.cowards.onlyarts.repositories.reaction.ReactionDTO;
+import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
 import com.cowards.onlyarts.services.FavorDAO;
 import com.cowards.onlyarts.services.TokenDAO;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -24,6 +29,38 @@ public class Favor {
 
     private static final FavorDAO favorDao = FavorDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
+
+    @PUT
+    @Path("/{artwork_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkFavor(@PathParam("artwork_id") String artworkId,
+            @HeaderParam("authtoken") String tokenString) throws ArtworkERROR {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            boolean check = favorDao.checkFavorite(token.getUserId(), artworkId);
+            ReactionDTO react = new ReactionDTO(artworkId, token.getUserId(), check);
+            return Response.ok(react).build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex).build();
+        }
+    }
+
+    @DELETE
+    @Path("/{artwork_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response remoceFavor(@PathParam("artwork_id") String artworkId,
+            @HeaderParam("authtoken") String tokenString) throws ArtworkERROR {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            boolean check = favorDao.removeFavorite(token.getUserId(), artworkId);
+            ReactionDTO react = new ReactionDTO(artworkId, token.getUserId(), check);
+            return Response.ok(react).build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ex).build();
+        }
+    }
 
     /**
      * Endpoint for viewing favorite artworks of a specific user.
@@ -61,7 +98,9 @@ public class Favor {
             String artworkId = artworkDTO.getArtworkId();
             boolean checkAddNewFavorite = favorDao.addFavorite(userId, artworkId);
             return checkAddNewFavorite
-                    ? Response.status(Response.Status.NO_CONTENT).build()
+                    ? Response.status(Response.Status.OK)
+                            .entity(new ReactionDTO(artworkId, userId, checkAddNewFavorite))
+                            .build()
                     : Response.status(Response.Status.NOT_ACCEPTABLE).build();
         } catch (TokenERROR ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(ex).build();

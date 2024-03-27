@@ -14,7 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class provides data access methods for interacting with artwork data in the database.
+ * This class provides data access methods for interacting with artwork data in
+ * the database.
  */
 public class ArtworkDAO {
 
@@ -64,6 +65,10 @@ public class ArtworkDAO {
             + "LEFT JOIN Users u on aw.owner_id = u.user_id\n"
             + "LEFT JOIN Categories c on aw.cate_id = c.cate_id\n"
             + "WHERE CONCAT(u.first_name, ' ', u.last_name) like ?";
+    private static final String UPDATE_STATUS
+            = "UPDATE [dbo].[Artworks]"
+            + "SET [status] = ?"
+            + " WHERE [artwork_id] = ?";
 
     private ArtworkDAO() {
     }
@@ -79,7 +84,7 @@ public class ArtworkDAO {
         }
         return instance;
     }
-    
+
     /**
      * Retrieves all artworks from the database.
      *
@@ -121,7 +126,8 @@ public class ArtworkDAO {
      * Retrieves artworks owned by a specific user.
      *
      * @param ownerId the ID of the owner.
-     * @return a list of ArtworkDTO objects representing the artworks owned by the user.
+     * @return a list of ArtworkDTO objects representing the artworks owned by
+     * the user.
      */
     public List<ArtworkDTO> getArtworkByOwner(String ownerId) {
         Connection conn = null;
@@ -199,7 +205,8 @@ public class ArtworkDAO {
     /**
      * Adds a new artwork to the database.
      *
-     * @param artwork the ArtworkDTO object representing the artwork to be added.
+     * @param artwork the ArtworkDTO object representing the artwork to be
+     * added.
      * @return true if the artwork is successfully added, false otherwise.
      */
     public boolean addArtwork(ArtworkDTO artwork) {
@@ -227,8 +234,10 @@ public class ArtworkDAO {
     /**
      * Updates the price of an existing artwork in the database.
      *
-     * @param artwork the ArtworkDTO object representing the artwork to be updated.
-     * @return true if the artwork price is successfully updated, false otherwise.
+     * @param artwork the ArtworkDTO object representing the artwork to be
+     * updated.
+     * @return true if the artwork price is successfully updated, false
+     * otherwise.
      */
     public boolean updateArtworkPrice(ArtworkDTO artwork) {
         Connection conn = null;
@@ -280,8 +289,10 @@ public class ArtworkDAO {
     /**
      * Updates the details of an existing artwork in the database.
      *
-     * @param artworkDTO the ArtworkDTO object representing the updated details of the artwork.
-     * @return true if the artwork details are successfully updated, false otherwise.
+     * @param artworkDTO the ArtworkDTO object representing the updated details
+     * of the artwork.
+     * @return true if the artwork details are successfully updated, false
+     * otherwise.
      * @throws ArtworkERROR if the artwork with the specified ID does not exist.
      */
     public boolean update(ArtworkDTO artworkDTO) throws ArtworkERROR {
@@ -391,7 +402,7 @@ public class ArtworkDAO {
         }
         return list;
     }
-    
+
     /**
      * Retrieves a list of artworks filtered by creator name.
      *
@@ -467,5 +478,23 @@ public class ArtworkDAO {
             context.closeStatement(stm);
         }
         return artworks;
+    }
+
+    public boolean changeStatus(String artworkId, int status, int state) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        boolean check = false;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(UPDATE_STATUS);
+            stm.setInt(1, status ^ state);
+            stm.setString(2, artworkId);
+            check = stm.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logError("Exception found on update(ArtworkDTO artworkDTO) method", e);
+        } finally {
+            context.closeStatement(stm);
+        }
+        return check;
     }
 }
