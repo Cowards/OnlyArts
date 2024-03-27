@@ -316,7 +316,7 @@ public class Request {
         try {
             String userId = tokenDao.getToken(tokenString).getUserId();
             RequestDTO request = requestDAO.getRequestById(requestId);
-            if (userId.equalsIgnoreCase(request.getPublisherId())) {
+            if (userId.equalsIgnoreCase(request.getCustomerID())) {
                 if (request.isApproved() || request.isResponse()) {
                     throw new RequestERROR("Resquest has been approved/responded. Cannot remove!");
                 }
