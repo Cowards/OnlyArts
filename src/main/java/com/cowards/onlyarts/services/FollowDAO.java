@@ -13,7 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class provides data access methods for managing user following and follower relationships in the database.
+ * This class provides data access methods for managing user following and
+ * follower relationships in the database.
  */
 public class FollowDAO {
 
@@ -24,6 +25,9 @@ public class FollowDAO {
             + "([user_id],[followed_user_id]) VALUES (?,?)";
     private static final String UNFOLLOW
             = "DELETE FROM [dbo].[Followings]"
+            + "WHERE [user_id] = ? AND [followed_user_id] = ?";
+    private static final String CHECK_FOLLOW
+            = "SELECT * FROM [dbo].[Followings]"
             + "WHERE [user_id] = ? AND [followed_user_id] = ?";
     private static final String GET_FOLLOWING = "SELECT tb2.[user_id],[role_id],"
             + "[first_name],[last_name],[avatar],[phone],[email],[address],"
@@ -60,12 +64,34 @@ public class FollowDAO {
         return instance;
     }
 
+    public boolean checkFollow(String userId, String userFollowedId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean check = false;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(CHECK_FOLLOW);
+            stm.setString(1, userId);
+            stm.setString(2, userFollowedId);
+            rs = stm.executeQuery();
+            check = rs.next();
+        } catch (SQLException ex) {
+            logError("Exception found on addfollow() method", ex);
+            check = false;
+        } finally {
+            context.closeStatement(stm);
+        }
+        return check;
+    }
+
     /**
      * Adds a user to follow another user.
      *
-     * @param userId          the ID of the user who is following.
-     * @param userFollowedId  the ID of the user being followed.
-     * @return true if the follow relationship is successfully added, false otherwise.
+     * @param userId the ID of the user who is following.
+     * @param userFollowedId the ID of the user being followed.
+     * @return true if the follow relationship is successfully added, false
+     * otherwise.
      */
     public boolean addFollow(String userId, String userFollowedId) {
         Connection conn = null;
@@ -89,9 +115,10 @@ public class FollowDAO {
     /**
      * Removes a follow relationship between two users.
      *
-     * @param userId          the ID of the user who initiates the unfollow action.
-     * @param userFollowedId  the ID of the user being unfollowed.
-     * @return true if the follow relationship is successfully removed, false otherwise.
+     * @param userId the ID of the user who initiates the unfollow action.
+     * @param userFollowedId the ID of the user being unfollowed.
+     * @return true if the follow relationship is successfully removed, false
+     * otherwise.
      */
     public boolean unfollowUser(String userId, String userFollowedId) {
         Connection conn = null;
@@ -115,8 +142,9 @@ public class FollowDAO {
     /**
      * Retrieves a list of users that the specified user is following.
      *
-     * @param userId  the ID of the user whose following list is to be retrieved.
-     * @return a list of UserDTO objects representing the users that the specified user is following.
+     * @param userId the ID of the user whose following list is to be retrieved.
+     * @return a list of UserDTO objects representing the users that the
+     * specified user is following.
      */
     public List<UserDTO> getFollowing(String userId) {
         List<UserDTO> followingList = new ArrayList<>();
@@ -158,8 +186,9 @@ public class FollowDAO {
     /**
      * Retrieves a list of users who are following a specific user.
      *
-     * @param userId  the ID of the user.
-     * @return a list of UserDTO objects representing the users who are following the specified user.
+     * @param userId the ID of the user.
+     * @return a list of UserDTO objects representing the users who are
+     * following the specified user.
      */
     public List<UserDTO> getFollower(String userId) {
         List<UserDTO> followerList = new ArrayList<>();

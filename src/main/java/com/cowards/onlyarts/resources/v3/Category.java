@@ -9,6 +9,8 @@ import com.cowards.onlyarts.services.CategoryDAO;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
@@ -17,11 +19,12 @@ import jakarta.ws.rs.core.Response;
  */
 @Path("v3/categories")
 public class Category {
-    
+
     private static final CategoryDAO cateDao = CategoryDAO.getInstance();
-    
+
     @GET
     @Path("/name/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getCateByName(@PathParam("name") String cateName) {
         try {
             CategoryDTO categoryDTO = cateDao.getCateByName(cateName);

@@ -24,7 +24,7 @@ public class ArtworkDAO {
     private static final String GET_ARTWORKS
             = "SELECT [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
-            + " FROM [dbo].[Artworks]";
+            + " FROM [dbo].[Artworks] ORDER BY [released_date] DESC";
     private static final String GET_TOP_10_ARTWORKS
             = "SELECT TOP (10) [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
@@ -33,7 +33,7 @@ public class ArtworkDAO {
     private static final String ADD_ARTWORK = "INSERT INTO [dbo].[Artworks]"
             + "(artwork_id, owner_id, cate_id, name, "
             + "description, artwork_image, price, status) "
-            + "VALUES(?, ?, ?, ?, ?, ?, 0, 0)";
+            + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_ARTWORK_PRICE
             = "UPDATE [dbo].[Artworks]"
             + "SET [price] = ?, [status] = 0 "
@@ -222,6 +222,8 @@ public class ArtworkDAO {
             stm.setString(4, artwork.getName());
             stm.setString(5, artwork.getDescription());
             stm.setString(6, artwork.getArtworkImage());
+            stm.setDouble(7, artwork.getPrice());
+            stm.setInt(8, artwork.getStatus());
             check = stm.executeUpdate() > 0;
         } catch (SQLException ex) {
             logError("Exception found on addArtwork() method", ex);

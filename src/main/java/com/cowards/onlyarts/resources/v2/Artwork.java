@@ -52,8 +52,8 @@ public class Artwork {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllOffset(@PathParam("offset") int offset) {
         List<ArtworkDTO> artworks = artworkDao.getAll();
-        int i = (offset - 1) * 28 + 1;
-        int j = offset * 28;
+        int i = (offset - 1) * 28;
+        int j = offset * 28 - 1;
         List< ArtworkDTO> _artworks = new ArrayList<>();
         for (int k = i; k <= j && k < artworks.size(); k++) {
             _artworks.add(artworks.get(k));
@@ -152,7 +152,7 @@ public class Artwork {
             TokenDTO token = tokenDao.getToken(tokenString);
             UserDTO userDTO = userDao.getUserById(token.getUserId());
             if (!userDTO.getRoleId().equals("CR")) {
-                throw new TokenERROR("You cannot publish this artwork");
+                throw new TokenERROR("You cannot publish artwork");
             }
             String artworkId = CodeGenerator.generateUUID(20);
             artwork.setArtworkId(artworkId);

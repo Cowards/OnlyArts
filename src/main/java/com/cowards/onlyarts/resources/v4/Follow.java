@@ -31,6 +31,22 @@ public class Follow {
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final FollowDAO followDao = FollowDAO.getInstance();
 
+    @GET
+    @Path("{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkFollow(@HeaderParam("authtoken") String tokenString,
+            @PathParam("userId") String userId) {
+        try {
+            TokenDTO token = tokenDao.getToken(tokenString);
+            boolean check = followDao.checkFollow(token.getUserId(), userId);
+            return Response.status(200)
+                    .entity(new FollowDTO(token.getUserId(), userId, check))
+                    .build();
+        } catch (TokenERROR ex) {
+            return Response.status(401).entity(ex).build();
+        }
+    }
+
     /**
      * Endpoint for following a user. This method adds a follow relationship
      * between the authenticated user and the specified user.
@@ -47,13 +63,10 @@ public class Follow {
         try {
             TokenDTO token = tokenDao.getToken(tokenString);
             boolean check = followDao.addFollow(token.getUserId(), userId);
-            if (check) {
-                return Response.status(200)
-                        .entity(new FollowDTO(token.getUserId(), userId, true))
-                        .build();
-            } else {
-                throw new TokenERROR("Cannot follow this user");
-            }
+            return Response.status(200)
+                    .entity(new FollowDTO(token.getUserId(), userId, check))
+                    .build();
+
         } catch (TokenERROR ex) {
             return Response.status(401).entity(ex).build();
         }
@@ -75,13 +88,9 @@ public class Follow {
         try {
             TokenDTO token = tokenDao.getToken(tokenString);
             boolean check = followDao.unfollowUser(token.getUserId(), userId);
-            if (check) {
-                return Response.status(200)
-                        .entity(new FollowDTO(token.getUserId(), userId, false))
-                        .build();
-            } else {
-                throw new TokenERROR("Cannot unfollow this user");
-            }
+            return Response.status(200)
+                    .entity(new FollowDTO(token.getUserId(), userId, check))
+                    .build();
         } catch (TokenERROR ex) {
             return Response.status(401).entity(ex).build();
         }
@@ -99,9 +108,7 @@ public class Follow {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFollowing(@PathParam("userid") String userId) {
         List<UserDTO> followingList = followDao.getFollowing(userId);
-        return !followingList.isEmpty()
-                ? Response.status(Response.Status.OK).entity(followingList).build()
-                : Response.status(Response.Status.NO_CONTENT).build();
+        return Response.status(Response.Status.OK).entity(followingList).build();
     }
 
     /**
@@ -116,9 +123,7 @@ public class Follow {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFollower(@PathParam("userid") String userId) {
         List<UserDTO> followerList = followDao.getFollower(userId);
-        return !followerList.isEmpty()
-                ? Response.status(Response.Status.OK).entity(followerList).build()
-                : Response.status(Response.Status.NO_CONTENT).build();
+        return Response.status(Response.Status.OK).entity(followerList).build();
 
     }
 
