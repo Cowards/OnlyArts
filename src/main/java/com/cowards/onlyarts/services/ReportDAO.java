@@ -1,6 +1,5 @@
 package com.cowards.onlyarts.services;
 
-import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.core.DBContext;
 import com.cowards.onlyarts.repositories.report.ReportDTO;
 import java.sql.Connection;
@@ -60,11 +59,10 @@ public class ReportDAO {
     /**
      * Reports an artwork based on the provided information.
      *
-     * @param userId The ID of the user who is reporting the artwork.
      * @param report The ReportDTO object containing the report details.
      * @return True if the artwork is reported successfully; otherwise, false.
      */
-    public boolean reportArtwork(String userId, ReportDTO report) {
+    public boolean reportArtwork(ReportDTO report) {
         Connection conn = null;
         PreparedStatement stm = null;
         boolean check = false;
@@ -72,9 +70,9 @@ public class ReportDAO {
             conn = DB.getConnection();
             if (conn != null) {
                 stm = conn.prepareStatement(ADD_REPORT);
-                stm.setString(1, CodeGenerator.generateUUID(20));
+                stm.setString(1, report.getReportId());
                 stm.setString(2, report.getArtworkId());
-                stm.setString(3, userId);
+                stm.setString(3, report.getReporterId());
                 stm.setString(4, report.getDescription());
                 check = stm.executeUpdate() > 0;
             }
@@ -222,5 +220,34 @@ public class ReportDAO {
             DB.closeStatement(stm);
         }
         return check;
+    }
+    
+    public ReportDTO getReport(String reportId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        ReportDTO reportDTO = new ReportDTO();
+        try {
+            conn = DB.getConnection();
+            if (conn != null) {
+                stm = conn.prepareStatement(GET_ALL_REPORTS + " WHERE report_id = ?");
+                stm.setString(1, reportId);
+                rs =stm.executeQuery();
+                while (rs.next()) {
+                    reportDTO.setReportId(rs.getString(1));
+                    reportDTO.setArtworkId(rs.getString(2));
+                    reportDTO.setReporterId(rs.getString(3));
+                    reportDTO.setDescription(rs.getString(4));
+                    reportDTO.setReportTime(rs.getDate(5));
+                    reportDTO.setStatus(rs.getInt(6));
+                }
+            }
+        } catch (SQLException e) {
+            logError("Execption found on getReport() method", e);
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stm);
+        }
+        return reportDTO;
     }
 }

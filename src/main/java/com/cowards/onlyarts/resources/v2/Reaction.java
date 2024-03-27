@@ -76,10 +76,8 @@ public class Reaction {
     @Path("/{artwork_id}")
     public Response viewReactUser(@PathParam("artwork_id") String artworkId) throws ArtworkERROR {
         List<UserDTO> userList = userDao.getUserReaction(artworkId);
-
         return Response
                 .ok(userList, MediaType.APPLICATION_JSON).build();
-
     }
 
     /**

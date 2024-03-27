@@ -48,8 +48,9 @@ public class Password {
                 throw new UserERROR("Old password does not match in the system");
             }
             userDao.changePassword(user.getUserId(), newPw);
+            UserDTO entity = userDao.getUserById(user.getUserId());
             return Response.status(Response.Status.OK)
-                    .build();
+                    .entity(entity).build();
         } catch (UserERROR | TokenERROR ex) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(ex)
@@ -99,7 +100,9 @@ public class Password {
             TokenDTO token = tokenDao.getToken(resetToken);
             UserDTO user = userDao.getUserById(token.getUserId());
             userDao.changePassword(user.getUserId(), newPw);
-            return Response.status(204).build();
+            UserDTO entity = userDao.getUserById(user.getUserId());
+            return Response.status(200)
+                    .entity(entity).build();
         } catch (TokenERROR ex) {
             return Response.status(401)
                     .entity(ex)

@@ -36,9 +36,9 @@ public class Cart {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@HeaderParam("authtoken") String tokeString) {
+    public Response get(@HeaderParam("authtoken") String tokenString) {
         try {
-            TokenDTO tokenDTO = tokenDao.getToken(tokeString);
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
             if (tokenDTO.isExpired()) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity(new TokenERROR("Login timeout"))

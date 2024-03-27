@@ -73,11 +73,8 @@ public class Favor {
     @Path("/{user_id}")
     public Response viewFavorite(@PathParam("user_id") String userId) {
         List<ArtworkDTO> favoArtworks = favorDao.getFavoriteArtworks(userId);
-        if (!favoArtworks.isEmpty()) {
-            return Response.ok(favoArtworks, MediaType.APPLICATION_JSON).build();
-        } else {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        }
+        return Response.ok(favoArtworks, MediaType.APPLICATION_JSON).build();
+
     }
 
     /**
