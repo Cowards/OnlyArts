@@ -2,20 +2,18 @@ package com.cowards.onlyarts.resources.v3;
 
 import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
-import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
-import com.cowards.onlyarts.repositories.cart.CartDTO;
 import com.cowards.onlyarts.repositories.order.OrderDTO;
 import com.cowards.onlyarts.repositories.order.OrderERROR;
-import com.cowards.onlyarts.repositories.orderdetail.OrderDetailDTO;
-import com.cowards.onlyarts.repositories.orderdetail.OrderDetailERROR;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
-import com.cowards.onlyarts.services.ArtworkDAO;
+import com.cowards.onlyarts.repositories.user.UserDTO;
+import com.cowards.onlyarts.repositories.user.UserERROR;
 import com.cowards.onlyarts.services.CartDAO;
 import com.cowards.onlyarts.services.OrderDAO;
-import com.cowards.onlyarts.services.OrderDetailDAO;
 import com.cowards.onlyarts.services.TokenDAO;
+import com.cowards.onlyarts.services.UserDAO;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -23,8 +21,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,16 +32,12 @@ import java.util.List;
 public class Order {
 
     private static final OrderDAO orderDao = OrderDAO.getInstance();
-    private static final OrderDetailDAO orderDetailDao = OrderDetailDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final CartDAO cartDao = CartDAO.getInstance();
-    private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
+    private static final UserDAO userDao = UserDAO.getInstance();
 
     /**
-     * Inserts a new order into the system. This method retrieves cart items
-     * associated with the user, calculates the total price, deletes the cart
-     * items, inserts the order into the database along with order details, and
-     * returns the order information.
+     * Inserts a new order into the system.
      *
      * @param orderDTO The order information to be inserted.
      * @param tokenString The authentication token.
@@ -64,59 +56,45 @@ public class Order {
                         .build();
             }
             String userId = tokenDTO.getUserId();
-            List<CartDTO> cartDTOs = cartDao.getAll(userId);
-            if (cartDTOs.isEmpty()) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
+            List<ArtworkDTO> artworkDTOs = cartDao.getAll(userId);
+            if (artworkDTOs.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("The cart is empty!!!").build();
+            }
+
+            for (int i = 0; i < artworkDTOs.size(); i++) {
+                if (artworkDTOs.get(i).getOwnerId()
+                        .equals(artworkDTOs.get(i + 1).getOwnerId())) {
+                    continue;
+                }
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("You can only create orders with the same owner!!!")
                         .build();
             }
-            HashMap<String, Object> result = new HashMap();
-            List<ArtworkDTO> artworkDTOs = new ArrayList<>();
+
             String orderId = CodeGenerator.generateUUID(20);
             float totalPrice = 0;
-            for (CartDTO cartDTO : cartDTOs) {
-                String artworkId = cartDTO.getArtworkId();
-                ArtworkDTO artworkDTO = artworkDao.getArtwork(artworkId);
+            for (ArtworkDTO artworkDTO : artworkDTOs) {
                 totalPrice += artworkDTO.getPrice();
-                artworkDTOs.add(artworkDTO);
             }
-            result.put("artworks", artworkDTOs);
-            if (!cartDao.delete(userId)) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
-                        .build();
-            }
-
-            orderDTO.setTotalPrice(totalPrice);
             orderDTO.setOrderId(orderId);
             orderDTO.setUserId(userId);
-            orderDTO.setStatus(0);
-            if (!orderDao.insert(orderDTO)) {
-                return Response.status(Response.Status.NOT_ACCEPTABLE)
-                        .build();
+            orderDTO.setTotalPrice(totalPrice);
+            boolean check = orderDao.insert(orderDTO);
+            if (check) {
+                orderDTO = orderDao.getOne(orderId);
+                return Response.ok(orderDTO).build();
             }
-            orderDTO = orderDao.getOne(orderId);
-            result.put("order", orderDTO);
-
-            OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
-            orderDetailDTO.setOrderId(orderId);
-            for (ArtworkDTO artworkDTO : artworkDTOs) {
-                String artworkId = artworkDTO.getArtworkId();
-                orderDetailDTO.setArtworkId(artworkId);
-                if (!orderDetailDao.insert(orderDetailDTO)) {
-                    return Response.status(Response.Status.NOT_ACCEPTABLE)
-                            .build();
-                }
-            }
-
-            return Response.ok(result).build();
-        } catch (OrderDetailERROR | TokenERROR | ArtworkERROR | OrderERROR e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("You cannot create an order!!!").build();
+        } catch (TokenERROR | OrderERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
         }
     }
 
     /**
-     * Retrieves all orders placed by the user. This method returns a list of
-     * orders along with their associated artwork details.
+     * Retrieves all orders placed by the user.
      *
      * @param tokenString The authentication token.
      * @return Response containing the user's orders and associated artwork
@@ -125,38 +103,18 @@ public class Order {
     @GET
     @Path("/ordered")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrders(@HeaderParam("authtoken") String tokenString) {
+    public Response getOrdersForCustomer(@HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
-            String userId = tokenDTO.getUserId();
             if (tokenDTO.isExpired()) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity(new TokenERROR("Login timeout"))
                         .build();
             }
-
-            HashMap<String, Object> result = new HashMap<>();
-
-            List<OrderDTO> orderDTOs = orderDao.getAll(userId);
-            for (OrderDTO orderDTO : orderDTOs) {
-                String orderId = orderDTO.getOrderId();
-                List<OrderDetailDTO> orderDetailDTOs
-                        = orderDetailDao.getAll(orderId);
-                List<ArtworkDTO> artworkDTOs
-                        = new ArrayList<>();
-                for (OrderDetailDTO orderDetailDTO : orderDetailDTOs) {
-                    ArtworkDTO artworkDTO
-                            = artworkDao.getArtwork(orderDetailDTO.getArtworkId());
-                    artworkDTOs.add(artworkDTO);
-                }
-
-                result.put(orderId, artworkDTOs);
-            }
-
-            result.put("orders", orderDTOs);
-
-            return Response.ok(result).build();
-        } catch (TokenERROR | ArtworkERROR e) {
+            String userId = tokenDTO.getUserId();
+            List<OrderDTO> list = orderDao.getAll(userId);
+            return Response.ok(list).build();
+        } catch (TokenERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e)
                     .build();
@@ -164,8 +122,7 @@ public class Order {
     }
 
     /**
-     * Retrieves all orders received by the publisher (owner). This method
-     * returns a list of orders along with their associated artwork details.
+     * Retrieves all orders received by the publisher (owner).
      *
      * @param tokenString The authentication token.
      * @return Response containing the publisher's orders and associated artwork
@@ -177,95 +134,105 @@ public class Order {
     public Response getOrdersForPublisher(@HeaderParam("authtoken") String tokenString) {
         try {
             TokenDTO tokenDTO = tokenDao.getToken(tokenString);
-            String userId = tokenDTO.getUserId();
             if (tokenDTO.isExpired()) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity(new TokenERROR("Login timeout"))
                         .build();
             }
-            HashMap<String, List> result = new HashMap<>();
-
-            List<OrderDTO> orders = orderDao.getAllByOwnerId(userId);
-            result.put("orders", orders);
-            for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails
-                        = orderDetailDao.getAll(order.getOrderId());
-                List<ArtworkDTO> artworks = new ArrayList<>();
-                for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork
-                            = artworkDao.getArtwork(orderDetail.getArtworkId());
-                    artworks.add(artwork);
-                }
-                result.put(order.getOrderId(), artworks);
-            }
-            return Response.ok(result).build();
-        } catch (TokenERROR | ArtworkERROR e) {
+            String userId = tokenDTO.getUserId();
+            List<OrderDTO> list = orderDao.getAllByOwnerId(userId);
+            return Response.ok(list).build();
+        } catch (TokenERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
         }
     }
 
     /**
-     * Retrieves all orders in the system. This method returns a list of orders
-     * along with their associated artwork details.
+     * Retrieves all orders in the system.
      *
+     * @param tokenString The authentication token.
      * @return Response containing all orders and associated artwork details.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrders() {
+    public Response getOrders(@HeaderParam("authtoken") String tokenString) {
         try {
-            HashMap<String, List> result = new HashMap<>();
-            List<OrderDTO> orders = orderDao.getAll();
-            result.put("orders", orders);
-            for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails
-                        = orderDetailDao.getAll(order.getOrderId());
-                List<ArtworkDTO> artworks = new ArrayList<>();
-                for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork
-                            = artworkDao.getArtwork(orderDetail.getArtworkId());
-                    artworks.add(artwork);
-                }
-                result.put(order.getOrderId(), artworks);
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            if (tokenDTO.isExpired()) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new TokenERROR("Login timeout"))
+                        .build();
             }
-            return Response.ok(result).build();
-        } catch (ArtworkERROR e) {
+            UserDTO userDTO = userDao.getUserById(tokenDTO.getUserId());
+            if (!userDTO.getRoleId().equals("AD")) {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity("You dont have permission to do this action!!!")
+                        .build();
+            }
+            List<OrderDTO> list = orderDao.getAll();
+            return Response.ok(list).build();
+        } catch (TokenERROR | UserERROR ex) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e).build();
+                    .entity(ex).build();
         }
     }
 
     /**
-     * Retrieves the top 10 orders based on some criteria. This method returns a
-     * list of orders along with their associated artwork details.
+     * Retrieves the top 10 orders based on some criteria.
      *
+     * @param tokenString The authentication token.
      * @return Response containing the top 10 orders and associated artwork
      * details.
      */
     @GET
     @Path("/top10")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTop10Orders() {
+    public Response getTop10Orders(@HeaderParam("authtoken") String tokenString) {
         try {
-            HashMap<String, List> result = new HashMap<>();
-            List<OrderDTO> orders = orderDao.getTop10();
-            result.put("orders", orders);
-            for (OrderDTO order : orders) {
-                List<OrderDetailDTO> orderDetails
-                        = orderDetailDao.getAll(order.getOrderId());
-                List<ArtworkDTO> artworks = new ArrayList<>();
-                for (OrderDetailDTO orderDetail : orderDetails) {
-                    ArtworkDTO artwork
-                            = artworkDao.getArtwork(orderDetail.getArtworkId());
-                    artworks.add(artwork);
-                }
-                result.put(order.getOrderId(), artworks);
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            if (tokenDTO.isExpired()) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new TokenERROR("Login timeout"))
+                        .build();
             }
-            return Response.ok(result).build();
-        } catch (ArtworkERROR e) {
+            UserDTO userDTO = userDao.getUserById(tokenDTO.getUserId());
+            if (!userDTO.getRoleId().equals("AD")) {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity("You dont have permission to do this action!!!")
+                        .build();
+            }
+            List<OrderDTO> list = orderDao.getTop10();
+            return Response.ok(list).build();
+        } catch (TokenERROR | UserERROR ex) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e).build();
+                    .entity(ex).build();
+        }
+    }
+
+    /**
+     * Deletes an order from the system.
+     *
+     * @param orderDTO
+     * @return Response indicating the success or failure of the deletion
+     * operation.
+     */
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response delete(OrderDTO orderDTO) {
+        try {
+            String orderId = orderDTO.getOrderId();
+            boolean check = orderDao.remove(orderId);
+            orderDTO = orderDao.getOne(orderId);
+            if (check) {
+                return Response.ok(orderDTO).build();
+            }
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Cannot remove this order!!!").build();
+        } catch (OrderERROR ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex).build();
         }
     }
 }
