@@ -1,7 +1,7 @@
 package com.cowards.onlyarts.services;
 
 import com.cowards.onlyarts.core.DBContext;
-import com.cowards.onlyarts.repositories.orderdetail.OrderDetailDTO;
+import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
 import com.cowards.onlyarts.repositories.orderdetail.OrderDetailERROR;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class provides data access operations for managing order details in the database.
+ * This class provides data access operations for managing order details in the
+ * database.
  */
 public class OrderDetailDAO {
 
@@ -22,23 +23,28 @@ public class OrderDetailDAO {
             + "(order_id, artwork_id) "
             + "VALUES (?, ?)";
     private static final String GET_ALL_BY_ORDER_ID
-            = "SELECT order_id, artwork_id "
-            + "FROM Order_details "
-            + "WHERE order_id = ?";
+            = "SELECT a.[artwork_id], a.[owner_id], a.[cate_id], a.[name]"
+            + ", a.[description], a.[artwork_image], a.[price]"
+            + ", a.[released_date], a.[status] "
+            + "FROM [dbo].[Order_details] od "
+            + "LEFT JOIN [dbo].[Artworks] a "
+            + "ON od.[artwork_id] = a.[artwork_id] "
+            + "WHERE od.[order_id] = ?";
 
     private static final DBContext context = DBContext.getInstance();
 
     private static OrderDetailDAO instance = null;
 
     /**
-     * Private constructor to prevent direct instantiation of the OrderDetailDAO class.
+     * Private constructor to prevent direct instantiation of the OrderDetailDAO
+     * class.
      */
     private OrderDetailDAO() {
     }
 
     /**
-     * Retrieves an instance of the OrderDetailDAO class. If no instance
-     * exists, a new instance is created and returned.
+     * Retrieves an instance of the OrderDetailDAO class. If no instance exists,
+     * a new instance is created and returned.
      *
      * @return An instance of the OrderDetailDAO class.
      */
@@ -62,27 +68,30 @@ public class OrderDetailDAO {
 
     /**
      * Inserts a new order detail into the database.
-     * 
-     * @param orderDetailDTO The OrderDetailDTO object representing the order detail to be inserted.
-     * @return True if the order detail was successfully inserted, otherwise false.
-     * @throws OrderDetailERROR If an error occurs while inserting the order detail.
+     *
+     * @param orderId The ID of the order.
+     * @param artworkId The ID of the artwork.
+     * @return True if the order detail was successfully inserted, otherwise
+     * false.
+     * @throws OrderDetailERROR If an error occurs while inserting the order
+     * detail.
      */
-    public boolean insert(OrderDetailDTO orderDetailDTO) throws OrderDetailERROR {
+    public boolean insert(String orderId, String artworkId) throws OrderDetailERROR {
         Connection conn = null;
         boolean check = false;
         PreparedStatement stm = null;
         try {
             conn = context.getConnection();
             stm = conn.prepareStatement(INSERT);
-            stm.setString(1, orderDetailDTO.getOrderId());
-            stm.setString(2, orderDetailDTO.getArtworkId());
+            stm.setString(1, orderId);
+            stm.setString(2, artworkId);
             if (stm.executeUpdate() > 0) {
                 check = true;
             } else {
                 throw new OrderDetailERROR("Cannot insert new order detail");
             }
         } catch (SQLException e) {
-            logError("Exception found on insert(OrderDetailsDTO orderDetailsDTO) method", e);
+            logError("Exception found on insert() method", e);
         } finally {
             context.closeStatement(stm);
         }
@@ -91,28 +100,35 @@ public class OrderDetailDAO {
 
     /**
      * Retrieves all order details associated with a specific order.
-     * 
+     *
      * @param orderId The ID of the order whose details are to be retrieved.
-     * @return A list of OrderDetailDTO objects representing the order details.
+     * @return A list of ArtworkDTO objects representing the order details.
      */
-    public List<OrderDetailDTO> getAll(String orderId) {
+    public List<ArtworkDTO> getAll(String orderId) {
         Connection conn = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
-        OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
-        List<OrderDetailDTO> list = new ArrayList<>();
+        List<ArtworkDTO> list = new ArrayList<>();
         try {
             conn = context.getConnection();
             stm = conn.prepareStatement(GET_ALL_BY_ORDER_ID);
             stm.setString(1, orderId);
             rs = stm.executeQuery();
             while (rs.next()) {
-                orderDetailDTO.setOrderId(rs.getString(1));
-                orderDetailDTO.setArtworkId(rs.getString(2));
-                list.add(orderDetailDTO);
+                ArtworkDTO artworkDTO
+                        = new ArtworkDTO(rs.getString(1),
+                                rs.getString(2),
+                                rs.getString(3),
+                                rs.getString(4),
+                                rs.getString(5),
+                                rs.getString(6),
+                                rs.getFloat(7),
+                                rs.getDate(8),
+                                rs.getInt(9));
+                list.add(artworkDTO);
             }
         } catch (SQLException e) {
-            logError("Exception found on getAll(String orderId) method", e);
+            logError("Exception found on getAll() method", e);
         } finally {
             context.closeResultSet(rs);
             context.closeStatement(stm);
