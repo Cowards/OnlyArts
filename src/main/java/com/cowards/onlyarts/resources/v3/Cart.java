@@ -3,11 +3,15 @@ package com.cowards.onlyarts.resources.v3;
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
 import com.cowards.onlyarts.repositories.cart.CartERROR;
+import com.cowards.onlyarts.repositories.reaction.ReactionDTO;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
+import com.cowards.onlyarts.repositories.user.UserDTO;
+import com.cowards.onlyarts.repositories.user.UserERROR;
 import com.cowards.onlyarts.services.ArtworkDAO;
 import com.cowards.onlyarts.services.CartDAO;
 import com.cowards.onlyarts.services.TokenDAO;
+import com.cowards.onlyarts.services.UserDAO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -15,6 +19,7 @@ import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -30,6 +35,30 @@ public class Cart {
     private static final CartDAO cartDao = CartDAO.getInstance();
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
+    private static final UserDAO userDao = UserDAO.getInstance();
+
+    @GET
+    @Path("{artworkId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkAdded(@HeaderParam("authtoken") String tokenString,
+            @PathParam("artworkId") String artworkId) {
+        try {
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            String userId = tokenDTO.getUserId();
+            UserDTO user = userDao.getUserById(userId);
+            if ("CR".equals(user.getRoleId())) {
+                throw new UserERROR("You dont have permission to add this artwork to cart");
+            }
+            boolean check = cartDao.checkAdded(userId, artworkId);
+            return Response.ok(new ReactionDTO(artworkId, userId, check)).build();
+        } catch (TokenERROR e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e).build();
+        } catch (UserERROR ex) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity(ex).build();
+        }
+    }
 
     /**
      * Endpoint for retrieving the user's cart items.
@@ -74,11 +103,11 @@ public class Cart {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity(new TokenERROR("Login timeout")).build();
             }
-            
+
             String userId = tokenDTO.getUserId();
             String artworkId = artworkDTO.getArtworkId();
             artworkDTO = artworkDao.getArtwork(artworkId);
-            
+
             if (artworkDTO.isPrivate()
                     || artworkDTO.isBanned()
                     || artworkDTO.isRemoved()) {

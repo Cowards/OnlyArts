@@ -33,6 +33,9 @@ public class CartDAO {
             = "DELETE FROM Carts WHERE artwork_id = ? AND user_id = ?";
     private static final String DELETE_ALL_BY_USER_ID
             = "DELETE FROM Carts WHERE user_id = ?";
+    private static final String CHECK_ADDED
+            = "SELECT [user_id], [artwork_id] FROM Carts "
+            + "WHERE [user_id] = ? AND [artwork_id] = ?";
 
     private static final DBContext DB = DBContext.getInstance();
 
@@ -51,6 +54,26 @@ public class CartDAO {
             instance = new CartDAO();
         }
         return instance;
+    }
+
+    public boolean checkAdded(String userId, String artworkId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean check = false;
+        try {
+            conn = DB.getConnection();
+            stm = conn.prepareStatement(GET_ALL_BY_USER_ID);
+            stm.setString(1, userId);
+            rs = stm.executeQuery();
+            check = rs.next();
+        } catch (SQLException e) {
+            logError("Exception found on getAll(String user_id) method", e);
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stm);
+        }
+        return check;
     }
 
     /**
