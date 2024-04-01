@@ -34,4 +34,17 @@ public class Category {
                     .entity(e).build();
         }
     }
+
+    @GET
+    @Path("{cateId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCateById(@PathParam("cateId") String cateId) {
+        try {
+            CategoryDTO categoryDTO = cateDao.getCateById(cateId);
+            return Response.ok(categoryDTO).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e).build();
+        }
+    }
 }
