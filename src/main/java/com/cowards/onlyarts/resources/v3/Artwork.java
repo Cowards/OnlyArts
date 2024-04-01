@@ -2,11 +2,13 @@ package com.cowards.onlyarts.resources.v3;
 
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
 import com.cowards.onlyarts.repositories.artwork.ArtworkERROR;
+import com.cowards.onlyarts.repositories.reaction.ReactionDTO;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
 import com.cowards.onlyarts.repositories.user.UserDTO;
 import com.cowards.onlyarts.repositories.user.UserERROR;
 import com.cowards.onlyarts.services.ArtworkDAO;
+import com.cowards.onlyarts.services.OrderDetailDAO;
 import com.cowards.onlyarts.services.TokenDAO;
 import com.cowards.onlyarts.services.UserDAO;
 import jakarta.ws.rs.Consumes;
@@ -31,6 +33,7 @@ public class Artwork {
     private static final ArtworkDAO artworkDao = ArtworkDAO.getInstance();
     private static final TokenDAO tokenDao = TokenDAO.getInstance();
     private static final UserDAO userDao = UserDAO.getInstance();
+    private static final OrderDetailDAO orderDetailDao = OrderDetailDAO.getInstance();
 
     /**
      * Endpoint for updating an artwork.
@@ -172,6 +175,29 @@ public class Artwork {
             return ex.getMessage().contains("exist")
                     ? Response.status(Response.Status.NOT_FOUND).entity(ex).build()
                     : Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex).build();
+        }
+    }
+
+    @GET
+    @Path("/isbuy")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response isBuy(ArtworkDTO artworkDTO,
+            @HeaderParam("authtoken") String tokenString) {
+        try {
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            String userId = tokenDTO.getUserId();
+            String artworkId = artworkDTO.getArtworkId();
+            boolean check = orderDetailDao.isBuy(userId, artworkId);
+            ReactionDTO reactionDTO = new ReactionDTO(artworkId, userId, check);
+            if (check) {
+                return Response.ok(reactionDTO).build();
+            }
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("This artwork not buy yet").build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex).build();
         }
     }
 }

@@ -30,6 +30,12 @@ public class OrderDetailDAO {
             + "LEFT JOIN [dbo].[Artworks] a "
             + "ON od.[artwork_id] = a.[artwork_id] "
             + "WHERE od.[order_id] = ?";
+    private static final String GET_USER_ARTWORK
+            = "SELECT * FROM [dbo].[Orders] o "
+            + "LEFT JOIN [dbo].[Order_details] od "
+            + "ON o.[order_id] = od.[order_id] "
+            + "WHERE o.[user_id] = ? "
+            + "AND od.[artwork_id] = ?";
 
     private static final DBContext context = DBContext.getInstance();
 
@@ -134,5 +140,28 @@ public class OrderDetailDAO {
             context.closeStatement(stm);
         }
         return list;
+    }
+    
+    public boolean isBuy(String userId, String artworkId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean check = false;
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(GET_USER_ARTWORK);
+            stm.setString(1, userId);
+            stm.setString(2, artworkId);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                check = true;
+            }
+        } catch (SQLException ex) {
+            logError("Exception found on isBuy() method", ex);
+        } finally {
+            context.closeResultSet(rs);
+            context.closeStatement(stm);
+        }
+        return check;
     }
 }
