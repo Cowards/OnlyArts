@@ -178,7 +178,7 @@ public class Artwork {
         }
     }
 
-    @GET
+    @PUT
     @Path("/isbuy")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
