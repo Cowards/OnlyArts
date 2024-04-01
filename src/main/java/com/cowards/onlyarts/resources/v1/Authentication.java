@@ -46,7 +46,7 @@ public class Authentication {
             if (user.isRemoved()) {
                 throw new UserERROR("Your account has been removed");
             }
-            if (Password.checkPw(user.getPassword(), loginUser.getPassword())) {
+            if (!Password.checkPw(user.getPassword(), loginUser.getPassword())) {
                 throw new UserERROR("Wrong password");
             }
             TokenDTO token = tokenDao.addLoginToken(loginUser.getUserId());
