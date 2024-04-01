@@ -190,11 +190,7 @@ public class Artwork {
             String artworkId = artworkDTO.getArtworkId();
             boolean check = orderDetailDao.isBuy(userId, artworkId);
             ReactionDTO reactionDTO = new ReactionDTO(artworkId, userId, check);
-            if (check) {
-                return Response.ok(reactionDTO).build();
-            }
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("This artwork not buy yet").build();
+            return Response.ok(reactionDTO).build();
         } catch (TokenERROR ex) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(ex).build();
