@@ -192,7 +192,7 @@ public class Artwork {
             ReactionDTO reactionDTO = new ReactionDTO(artworkId, userId, check);
             return Response.ok(reactionDTO).build();
         } catch (TokenERROR ex) {
-            return Response.status(Response.Status.NOT_FOUND)
+            return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(ex).build();
         }
     }
