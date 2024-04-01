@@ -2,6 +2,7 @@ package com.cowards.onlyarts.services;
 
 import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.core.DBContext;
+import com.cowards.onlyarts.core.Password;
 import com.cowards.onlyarts.repositories.user.UserDTO;
 import com.cowards.onlyarts.repositories.user.UserERROR;
 import java.sql.Connection;
@@ -118,7 +119,7 @@ public class UserDAO {
             stm.setString(7, user.getAddress());
             stm.setString(8, user.getBio());
             stm.setInt(9, 0b000);
-            stm.setString(10, user.getPassword());
+            stm.setString(10, Password.hashPw(user.getPassword()));
             stm.setString(11, user.getAvatar());
             stm.executeUpdate();
             user.setUserId(userId);
@@ -158,7 +159,7 @@ public class UserDAO {
                 user.setAddress(rs.getString("address"));
                 user.setJoinDate(rs.getDate("join_date"));
                 user.setBio(rs.getString("bio"));
-                user.setStatus(rs.getString("status").equals("Active") ? 1 : 0);
+                user.setStatus(rs.getInt("status"));
                 user.setAvatar(rs.getString("avatar"));
                 user.setPassword(rs.getString("password"));
             } else {
@@ -470,7 +471,7 @@ public class UserDAO {
         }
         return list;
     }
-    
+
     public List<UserDTO> getAllUserByRole(String roleId) {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -483,11 +484,11 @@ public class UserDAO {
             rs = stm.executeQuery();
             while (rs.next()) {
                 UserDTO userDTO = new UserDTO(rs.getString(1),
-                        rs.getString(roleId), rs.getString(3), 
-                        rs.getString(4), rs.getString(5), 
-                        rs.getString(6), rs.getString(7), 
-                        rs.getString(8), rs.getDate(9), 
-                        rs.getString(10), rs.getInt(11), 
+                        rs.getString(roleId), rs.getString(3),
+                        rs.getString(4), rs.getString(5),
+                        rs.getString(6), rs.getString(7),
+                        rs.getString(8), rs.getDate(9),
+                        rs.getString(10), rs.getInt(11),
                         rs.getString(12));
                 list.add(userDTO);
             }

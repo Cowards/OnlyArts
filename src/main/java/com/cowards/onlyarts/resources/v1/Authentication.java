@@ -1,5 +1,6 @@
 package com.cowards.onlyarts.resources.v1;
 
+import com.cowards.onlyarts.core.Password;
 import com.cowards.onlyarts.repositories.token.TokenDTO;
 import com.cowards.onlyarts.repositories.token.TokenERROR;
 import com.cowards.onlyarts.repositories.user.UserDTO;
@@ -20,7 +21,7 @@ import jakarta.ws.rs.core.Response;
  * This class represents the authentication endpoints for user login, logout,
  * registration, and account information retrieval.
  */
-@Path("v1/authentication")
+@Path("v1/authen")
 public class Authentication {
 
     private static final UserDAO userDao = UserDAO.getInstance();
@@ -39,14 +40,14 @@ public class Authentication {
     public Response login(UserDTO user) {
         try {
             UserDTO loginUser = userDao.getUserByEmail(user.getEmail());
-            if (!user.getPassword().equals(loginUser.getPassword())) {
-                throw new UserERROR("Password does not match in the system");
-            }
             if (user.isBanned()) {
                 throw new UserERROR("Your account has been banned");
             }
             if (user.isRemoved()) {
                 throw new UserERROR("Your account has been removed");
+            }
+            if (Password.checkPw(user.getPassword(), loginUser.getPassword())) {
+                throw new UserERROR("Wrong password");
             }
             TokenDTO token = tokenDao.addLoginToken(loginUser.getUserId());
             if (!loginUser.isOnline()) {
