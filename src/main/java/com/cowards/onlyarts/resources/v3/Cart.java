@@ -121,7 +121,7 @@ public class Cart {
                 return Response.ok(artworkDTO).build();
             }
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Cannot add this artwork to cart").build();
+                    .entity(new CartERROR("You have already added this artwork to your cart")).build();
         } catch (TokenERROR | ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
