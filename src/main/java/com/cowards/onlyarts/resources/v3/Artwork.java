@@ -211,4 +211,16 @@ public class Artwork {
                     .entity(ex).build();
         }
     }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getArtworks(String userId) {
+        try {
+            List<ArtworkDTO> list = artworkDao.getArtworkByOwner(userId);
+            return Response.ok(list).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex).build();
+        }
+    }
 }

@@ -21,10 +21,10 @@ public class ArtworkDAO {
 
     private static final DBContext context = DBContext.getInstance();
     private static ArtworkDAO instance;
-    private static final String GET_ARTWORKS
+        private static final String GET_ARTWORKS
             = "SELECT [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
-            + " FROM [dbo].[Artworks] ORDER BY [released_date] DESC";
+            + " FROM [dbo].[Artworks]";
     private static final String GET_TOP_10_ARTWORKS
             = "SELECT TOP (10) [artwork_id], [owner_id], [cate_id], [name], [description], "
             + "[artwork_image], [price], [released_date], [status]"
@@ -97,7 +97,7 @@ public class ArtworkDAO {
         List<ArtworkDTO> artworks = new ArrayList<>();
         try {
             conn = context.getConnection();
-            stm = conn.prepareStatement(GET_ARTWORKS);
+            stm = conn.prepareStatement(GET_ARTWORKS + " ORDER BY [released_date] DESC");
             rs = stm.executeQuery();
             ArtworkDTO artwork = null;
             while (rs.next()) {
@@ -136,7 +136,8 @@ public class ArtworkDAO {
         List<ArtworkDTO> artworks = new ArrayList<>();
         try {
             conn = context.getConnection();
-            stm = conn.prepareStatement(GET_ARTWORKS + " WHERE [owner_id] = ?");
+            stm = conn.prepareStatement(GET_ARTWORKS + " WHERE [owner_id] = ? "
+                    + "ORDER BY [released_date] DESC");
             stm.setString(1, ownerId);
             rs = stm.executeQuery();
             ArtworkDTO artwork = null;
