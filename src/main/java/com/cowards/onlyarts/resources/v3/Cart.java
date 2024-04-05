@@ -107,7 +107,10 @@ public class Cart {
             String userId = tokenDTO.getUserId();
             String artworkId = artworkDTO.getArtworkId();
             artworkDTO = artworkDao.getArtwork(artworkId);
-
+            UserDTO user = userDao.getUserById(userId);
+            if ("CR".equals(user.getRoleId())) {
+                throw new UserERROR("You dont have permission to add this artwork to cart");
+            }
             if (artworkDTO.isPrivate()
                     || artworkDTO.isBanned()
                     || artworkDTO.isRemoved()) {
@@ -122,7 +125,7 @@ public class Cart {
             }
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new CartERROR("You have already added this artwork to your cart")).build();
-        } catch (TokenERROR | ArtworkERROR e) {
+        } catch (TokenERROR | UserERROR | ArtworkERROR e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e).build();
         }
