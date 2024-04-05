@@ -20,8 +20,8 @@ public class OrderDetailDAO {
 
     private static final String INSERT
             = "INSERT INTO Order_details "
-            + "(order_id, artwork_id) "
-            + "VALUES (?, ?)";
+            + "(order_id, artwork_id, price) "
+            + "VALUES (?, ?,?)";
     private static final String GET_ALL_BY_ORDER_ID
             = "SELECT a.[artwork_id], a.[owner_id], a.[cate_id], a.[name]"
             + ", a.[description], a.[artwork_image], a.[price]"
@@ -82,7 +82,7 @@ public class OrderDetailDAO {
      * @throws OrderDetailERROR If an error occurs while inserting the order
      * detail.
      */
-    public boolean insert(String orderId, String artworkId) throws OrderDetailERROR {
+    public boolean insert(String orderId, String artworkId, double price) throws OrderDetailERROR {
         Connection conn = null;
         boolean check = false;
         PreparedStatement stm = null;
@@ -91,6 +91,7 @@ public class OrderDetailDAO {
             stm = conn.prepareStatement(INSERT);
             stm.setString(1, orderId);
             stm.setString(2, artworkId);
+            stm.setDouble(3, price);
             if (stm.executeUpdate() > 0) {
                 check = true;
             } else {
@@ -141,7 +142,7 @@ public class OrderDetailDAO {
         }
         return list;
     }
-    
+
     public boolean isBuy(String userId, String artworkId) {
         Connection conn = null;
         PreparedStatement stm = null;

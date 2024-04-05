@@ -1,6 +1,5 @@
 package com.cowards.onlyarts.resources.v3;
 
-import com.cowards.onlyarts.core.CodeGenerator;
 import com.cowards.onlyarts.repositories.artwork.ArtworkDTO;
 import com.cowards.onlyarts.repositories.order.OrderDTO;
 import com.cowards.onlyarts.repositories.order.OrderERROR;
@@ -61,18 +60,7 @@ public class Order {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("The cart is empty!!!").build();
             }
-
-            for (int i = 0; i < artworkDTOs.size(); i++) {
-                if (artworkDTOs.get(i).getOwnerId()
-                        .equals(artworkDTOs.get(i + 1).getOwnerId())) {
-                    continue;
-                }
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("You can only create orders with the same owner!!!")
-                        .build();
-            }
-
-            String orderId = CodeGenerator.generateUUID(20);
+            String orderId = orderDTO.getOrderId();
             float totalPrice = 0;
             for (ArtworkDTO artworkDTO : artworkDTOs) {
                 totalPrice += artworkDTO.getPrice();

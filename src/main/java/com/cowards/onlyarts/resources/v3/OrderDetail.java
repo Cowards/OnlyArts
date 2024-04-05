@@ -73,7 +73,7 @@ public class OrderDetail {
             boolean check = false;
             for (ArtworkDTO artworkDTO : artworkDTOs) {
                 String artworkId = artworkDTO.getArtworkId();
-                check = orderDetailDao.insert(orderId, artworkId);
+                check = orderDetailDao.insert(orderId, artworkId, artworkDTO.getPrice());
                 if (!check) {
                     return Response.status(Response.Status.BAD_REQUEST)
                             .entity("Cannot add new order detail").build();
