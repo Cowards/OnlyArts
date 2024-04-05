@@ -36,6 +36,16 @@ public class OrderDetailDAO {
             + "ON o.[order_id] = od.[order_id] "
             + "WHERE o.[user_id] = ? "
             + "AND od.[artwork_id] = ?";
+    private static final String GET_ARTWORKS_PURCHASED
+            = "SELECT a.[artwork_id], a.[owner_id], a.[cate_id], a.[name], "
+            + "a.[description], a.[artwork_image], a.[price], a.[released_date], "
+            + "a.[status] "
+            + "FROM [dbo].[Orders] o "
+            + "LEFT JOIN [dbo].[Order_details] od "
+            + "ON o.[order_id] = od.[order_id] "
+            + "LEFT JOIN [dbo].[Artworks] a "
+            + "ON a.[artwork_id] = od.[artwork_id]"
+            + "WHERE o.[user_id] = ? ";
 
     private static final DBContext context = DBContext.getInstance();
 
@@ -164,5 +174,37 @@ public class OrderDetailDAO {
             context.closeStatement(stm);
         }
         return check;
+    }
+
+    public List<ArtworkDTO> isBuy(String userId) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        List<ArtworkDTO> list = new ArrayList<>();
+        try {
+            conn = context.getConnection();
+            stm = conn.prepareStatement(GET_ARTWORKS_PURCHASED);
+            stm.setString(1, userId);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                ArtworkDTO artworkDTO
+                        = new ArtworkDTO(rs.getString(1),
+                                rs.getString(2),
+                                rs.getString(3),
+                                rs.getString(4),
+                                rs.getString(5),
+                                rs.getString(6),
+                                rs.getFloat(7),
+                                rs.getDate(8),
+                                rs.getInt(9));
+                list.add(artworkDTO);
+            }
+        } catch (SQLException ex) {
+            logError("Exception found on isBuy() method", ex);
+        } finally {
+            context.closeResultSet(rs);
+            context.closeStatement(stm);
+        }
+        return list;
     }
 }

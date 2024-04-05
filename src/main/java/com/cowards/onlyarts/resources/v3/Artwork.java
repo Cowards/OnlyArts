@@ -196,4 +196,19 @@ public class Artwork {
                     .entity(ex).build();
         }
     }
+
+    @GET
+    @Path("/isbuy")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getArtworkIsBuy(@HeaderParam("authtoken") String tokenString) {
+        try {
+            TokenDTO tokenDTO = tokenDao.getToken(tokenString);
+            String userId = tokenDTO.getUserId();
+            List<ArtworkDTO> list = orderDetailDao.isBuy(userId);
+            return Response.ok(list).build();
+        } catch (TokenERROR ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex).build();
+        }
+    }
 }
