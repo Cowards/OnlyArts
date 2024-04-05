@@ -211,10 +211,11 @@ public class Artwork {
                     .entity(ex).build();
         }
     }
-    
+
     @GET
+    @Path("{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getArtworks(String userId) {
+    public Response getArtworks(@PathParam("userId") String userId) {
         try {
             List<ArtworkDTO> list = artworkDao.getArtworkByOwner(userId);
             return Response.ok(list).build();
